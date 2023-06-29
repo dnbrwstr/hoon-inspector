@@ -19,13 +19,27 @@ const tables = {
     id: "tblBgPU0roZVUY5Il",
     views: {
       grid: {
+        id: "viwjaB6uP3oX15nx3",
+        name: "Grid view",
+      },
+    },
+  },
+  vocab: {
+    name: "Vocab",
+    id: "tblz9ANvMBLezvOgm",
+    views: {
+      grid: {
+        id: "viwC7cXNa32gNQepU",
         name: "Grid view",
       },
     },
   },
 };
 
+export const getEditUrl = (table, itemId) => {
+  return `https://airtable.com/${baseId}/${table.id}/${table.views.grid.id}/${itemId}?blocks=hide`;
+};
+
 export const apiRoot = `https://api.airtable.com/v0/${baseId}/${tables.runes.name}`;
-export const editRoot = `https://airtable.com/${baseId}/${tables.runes.id}/${tables.runes.views.grid.id}`;
 
 export { accessToken, baseId, tables };

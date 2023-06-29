@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "http-server -c-1 example"
+  },
+  "devDependencies": {
+    "airtable": "^0.11.6",
+    "browser-sync": "^2.27.11",
+    "csv-stringify": "^6.2.4",
+    "dotenv": "^16.0.3",
+    "http-server": "^14.1.1",
+    "livereload": "^0.9.3",
+    "toml": "^3.0.0"
+  }
+}

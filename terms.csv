@@ -1,0 +1,3346 @@
+agent,,Arvo,A userspace application managed by Gall.,"+++
+title = ""Agent""
+
+[glossaryEntry.agent]
+name = ""agent""
+symbol = """"
+usage = ""Arvo""
+desc = ""A userspace application managed by Gall.""
+
++++
+
+**Agents** are the main kind of userspace application on Urbit. They have a
+persistent state and API that handles events and produces effects. Agents are
+managed by the [Gall](/reference/glossary/gall) [vane](/reference/glossary/vane)
+(kernel module). Agents are sometimes just called ""apps"", though that is a
+little ambiguous as a single app installed in Landscape may have multiple agents
+working together in the background.
+
+Gall agents can variously be treated as databases with developer-defined logic,
+services, daemons, or a kind of state machine.
+
+### Further Reading
+
+- [App School](/guides/core/app-school/intro): A comprehensive guide to writing
+  Gall agents.
+"
+ames,,Arvo,The name of the Urbit network and the vane that communicates over it.,"+++
+title = ""Ames""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.ames]
+name = ""ames""
+symbol = """"
+usage = ""Arvo""
+desc = ""The name of the Urbit network and the vane that communicates over it.""
+
++++
+
+**Ames** is the name of the Urbit network and the
+[vane](/reference/glossary/vane) that communicates over it. It's an encrypted
+peer-to-peer network composed of instances of the
+[Arvo](/reference/glossary/arvo) operating system. Each point
+([galaxy](/reference/glossary/galaxy), [star](/reference/glossary/star),
+[planet](/reference/glossary/planet), [moon](/reference/glossary/moon), or
+[comet](/reference/glossary/comet)) communicates over the network utilizing the
+Ames protocol.
+
+### Further Reading
+
+- [The Ames reference](/reference/arvo/ames/ames): An in-depth technical guide
+  to the Ames vane and protocol.
+- [A Guide to Factory Reset](https://urbit.org/using/id/guide-to-resets): Instructions on
+  performing factory resets.
+- [Ship Troubleshooting](https://urbit.org/using/os/ship-troubleshooting):
+  General instructions on getting your ship to work, which includes network
+  connectivity issues.
+"
+API,,Arvo,An application programming interface.,"+++
+title = ""API""
+
+[glossaryEntry.API]
+name = ""API""
+symbol = """"
+usage = ""Arvo""
+desc = ""An application programming interface.""
+
++++
+
+**API** stands for ""application programming interface"". It refers to the
+definitions and protocols that allow one application to communicate with
+another. In Urbit, some notable APIs are the `task`s and `gift`s of
+[vanes](/reference/glossary/vane) (kernel modules) and things like
+[pokes](/reference/glossary/poke) for [Gall](/reference/glossary/gall)
+[agents](/reference/glossary/agent).
+
+#### Further reading
+
+- [The Arvo reference docs](/reference/arvo/overview): These technical developer
+  docs include API documentation for Arvo's vanes.
+- [App School](/guides/core/app-school/intro): This is a guide to writing Gall
+  agents, and goes over the APIs of Gall agents in detail.
+"
+aqua,,Arvo,A virtualization tool whose primary purpose is testing and development.,"+++
+title = ""Aqua""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.aqua]
+name = ""aqua""
+symbol = """"
+usage = ""Arvo""
+desc = ""A virtualization tool whose primary purpose is testing and development.""
+
++++
+
+**Aqua** is something like Docker but for Urbit; it is a virtualization tool whose primary purpose is testing and development.
+
+Aqua is a [Gall](/reference/glossary/gall) app that runs an [Arvo](/reference/glossary/arvo) instance or instances in userspace. It pretends to be [Vere](/reference/glossary/vere), and as such it loads [pills](/reference/glossary/pill) to boot up a virtual ship or fleet of ships and then manages them from within the parent Arvo instance. Running tests for a virtual fleet of Aqua ships is done using [pH](/reference/glossary/ph).
+
+Aqua is jetted with the usual [Nock](/reference/glossary/nock) interpreter and thus virtual ships do not run any slower than the parent ship.
+"
+arm,,arm,A Hoon expression encoded as a noun. Part of a core.,"+++
+title = ""Arm""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.arm]
+name = ""arm""
+symbol = """"
+usage = ""arm""
+desc = ""A Hoon expression encoded as a noun. Part of a core.""
+
++++
+
+An **arm** is a named Hoon expression in a [core](/reference/glossary/core). A
+core contains one or more arms. If a core is thought of as an object in an
+object-oriented language, its arms can be thought of as its methods.
+
+Arms are one of the two types of [wing](/reference/glossary/wing) in the
+[subject](/reference/glossary/subject), the other being a
+[leg](/reference/glossary/leg).
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [“Cores”](/guides/core/hoon-school/F-cores#cores): A Hoon Tutorial lesson that discusses cores.
+"
+arvo,,Arvo,The Urbit operating system and kernel.,"+++
+title = ""Arvo""
+
+[glossaryEntry.arvo]
+name = ""arvo""
+symbol = """"
+usage = ""Arvo""
+desc = ""The Urbit operating system and kernel.""
+
++++
+
+**Arvo** is the Urbit operating system and kernel. Arvo's state is a pure
+function of its [event log](/reference/glossary/eventlog), and it serves as the
+Urbit event manager. It contains [vanes](/reference/glossary/vane), which are
+kernel modules that perform essential system operations.
+
+Arvo being purely functional means that the state of the operating system at a
+given moment is completely determined by the sequence of events in the event
+log. In other words, the state of an Arvo instance is given by a lifecycle
+function
+
+```
+L: History ➜ State
+```
+
+where `History` consists of the set of all possible sequences of events in an
+Arvo event log.
+
+Arvo coordinates and reloads vanes. It can be thought of as a traffic-director.
+Any vane needs to go through Arvo before reaching another vane. Events and their
+effects happen like so:
+
+```
+Unix event -> Vere -> Arvo -> vane -> Arvo
+```
+
+Here, [Vere](/reference/glossary/vere) is the virtual machine running Urbit.
+
+Arvo is located in `/base/sys/arvo.hoon` within your urbit.
+
+Arvo vanes are [Ames](/reference/glossary/ames) for networking,
+[Behn](/reference/glossary/behn) for timing, [Clay](/reference/glossary/clay)
+for the filesystem and build system, [Dill](/reference/glossary/dill) for
+terminal driving, [Eyre](/reference/glossary/eyre) for the web server,
+[Gall](/reference/glossary/gall) for application management,
+[Iris](/reference/glossary/iris) for the HTTP client,
+[Jael](/reference/glossary/jael) for PKI management, and
+[Khan](/reference/glossary/khan) for external control and thread running.
+
+Vanes and other programs for Arvo are written in [Hoon](/reference/glossary/hoon).
+
+A ship creates its own copy of Arvo via a bootstrap sequence known as a
+[Pill](/reference/glossary/pill).
+
+### Further Reading
+
+- [The Arvo reference](/reference/arvo/overview): An in-depth technical
+  guide to Arvo and its vanes.
+"
+atom,,hoon-nock,"The most basic data type in Hoon and Nock, a non-negative integer of any size.","+++
+title = ""Atom""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.atom]
+name = ""atom""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The most basic data type in Hoon and Nock, a non-negative integer of any size.""
+
++++
+
+An **atom** is any non-negative integer of any size. The atom is the most basic data type in [Nock](/reference/glossary/nock) and [Hoon](/reference/glossary/hoon).
+
+A Hoon atom type consists of a Nock atom with two additional pieces of metadata:
+an _aura_, which is a soft type that declares if an atom is a date, a ship name,
+a number, etc, and an optional constant. A Hoon atom type is _warm_ or _cold_
+based on whether or not the constant exists:
+
+- A Hoon atom type is [warm](/reference/glossary/warm-atom) if the constant is `~`
+  (null), any atom is in the type.
+- A Hoon atom type is [cold](/reference/glossary/cold-atom) if the constant is `[~
+  atom]`, its only legal value is the exact value of the atom.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon
+  programming language.
+  - [“Hoon Syntax”](/guides/core/hoon-school/B-syntax#nouns): A Hoon School
+    lesson that explains how atoms work.
+- [The Nock explanation](/reference/nock/explanation): Includes an explanation
+  of atoms.
+"
+aura,,hoon-nock,Types for atoms.,"+++
+title = ""Aura""
+
+[glossaryEntry.aura]
+name = ""aura""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Types for atoms.""
+
++++
+
+**Auras** are types of [atoms](/reference/glossary/atom). A generic atom (`@`)
+is a non-negative decimal integer. Auras allow such atoms to be defined more
+specifically, such as `@t` for little-endian UTF-8 strings, `@ux` for
+hexadecimal and `@p` for a [ship](/reference/glossary/ship) name like
+`~sampel-palnet`. Auras do three things:
+
+1. Define type nesting logic, such that `@tas` nests under `@`, `@t`, and `@ta`
+   but not `@p`.
+2. Let the pretty-printer know how to print the values, so a `@t` like `'foo'`
+   prints as `'foo'` rather than `7.303.014`.
+3. Define literal syntaxes for the various auras, so the parser/compiler can
+   understand them.
+   
+Note that auras do not enforce the validity of an encoding scheme, so you can
+type-cast the `@t` `'!!!'` to `@ta` despite `!` not being allowed in an `@ta`
+literal. They are ultimately just metadata given to compiler.
+
+#### Further reading
+
+- [Aura reference](/reference/hoon/auras): Additional information about auras.
+- [Hoon School: syntax lesson](/guides/core/hoon-school/B-syntax): Includes details of
+  atoms and auras.
+"
+aural ASCII,,hoon-nock,Short names for special characters in hoon.,"+++
+title = ""Aural ASCII""
+
+[glossaryEntry.""aural ASCII""]
+name = ""aural ASCII""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Short names for special characters in hoon.""
+
++++
+
+The [Hoon](/reference/glossary/hoon) language makes extensive use of
+non-alphanumeric symbols, most notably in composing
+[runes](/reference/glossary/rune). When discussing Hoon code aloud, it is
+cumbersome to say, for example, ""exclamation mark left-angle bracket"" in
+reference to the `!<` rune. To make it easier, a set of pronounceable monosyllabic names for
+ASCII special symbols are conventionally used. In the `!<` example, this would
+be called ""zapgal"", where `!` is ""zap"" and `<` is ""gal"".
+
+Here is a complete list of pronunciations:
+
+| Symbol      | Name |
+|-------------|------|
+| `␣` (space) | ace  |
+| `\`         | bas  |
+| `$`         | buc  |
+| `_`         | cab  |
+| `%`         | cen  |
+| `:`         | col  |
+| `,`         | com  |
+| `""`         | doq  |
+| `.`         | dot  |
+| `/`         | fas  |
+| `<`         | gal  |
+| `␣␣`, `\0a`  | gap  |
+| `>`         | gar  |
+| `#`         | hax  |
+| `-`         | hep  |
+| `{`         | kel  |
+| `}`         | ker  |
+| `^`         | ket  |
+| `+`         | lus  |
+| `;`         | mic  |
+| `(`         | pal  |
+| `&`         | pam  |
+| `)`         | par  |
+| `@`         | pat  |
+| `[`         | sel  |
+| `]`         | ser  |
+| `~`         | sig  |
+| `'`         | soq  |
+| `*`         | tar  |
+| `` ` ``     | tic  |
+| `=`         | tis  |
+| `?`         | wut  |
+| `!`         | zap  |
+"
+azimuth,,azimuth,"Urbit's identity layer, built as a suite of smart contracts on the Ethereum blockchain.","+++
+title = ""Azimuth""
+
+[glossaryEntry.azimuth]
+name = ""azimuth""
+symbol = """"
+usage = ""azimuth""
+desc = ""Urbit's identity layer, built as a suite of smart contracts on the Ethereum blockchain.""
+
++++
+
+**Azimuth** is Urbit's identity layer, built as a suite of smart contracts on
+the Ethereum blockchain and several apps run locally on your
+[ship](/reference/glossary/ship). It is Urbit's method of securing digital identities
+that are required to use the [Arvo](/reference/glossary/arvo) peer-to-peer network,
+without the need for a central authority. Azimuth identities exist as
+non-fungible tokens, which are owned by Ethereum addresses and can be
+transferred between such addresses. Identities can use the
+[claims](/reference/glossary/claims) contract to make assertions – real-world or
+otherwise – about their owner.
+
+The primary way to interact with Azimuth and to manage your identities is
+through our [Bridge](https://bridge.urbit.org) application. Bridge is a
+front-end for [Ecliptic](/reference/glossary/ecliptic), the Azimuth contract that's
+used to perform actions on the blockchain.
+
+There are a limited number of Azimuth identities which results in identities
+having value. This allows for identities to function as reputation primitives,
+since such scarcity creates an economic incentive for identities to remain
+static and to keep the network friendly. Undesirable behavior – spamming,
+scamming, and malware-spreading - will generally result in a
+[censure](/reference/glossary/censures) from [galaxies](/reference/glossary/galaxy) and
+[stars](/reference/glossary/star), marking the bad actor.
+
+It should be noted that Azimuth isn't built just for Arvo. It can be used as an
+identity system for other projects.
+
+### Further Reading
+
+- [The Azimuth concepts page](/reference/azimuth/azimuth): A more in-depth
+  explanation of Azimuth.
+- [Install instructions](https://urbit.org/getting-started): Guide to installing Urbit, which
+  includes instructions on booting with your Urbit identity.
+- [Urbit ID Overview](https://urbit.org/overview/urbit-id)
+
+"
+battery,,battery,A collection of Hoon expressions stored at the head of a core.,"+++
+title = ""Battery""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.battery]
+name = ""battery""
+symbol = """"
+usage = ""battery""
+desc = ""A collection of Hoon expressions stored at the head of a core.""
+
++++
+
+A **battery** is a collection of Hoon expressions and the head of a [core](/reference/glossary/core).
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [“Cores”](/guides/core/hoon-school/F-cores#cores): A Hoon Tutorial lesson that discusses cores.
+"
+behn,,arvo,Timing vane of Arvo. Allows for applications to schedule events.,"+++
+title = ""Behn""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.behn]
+name = ""behn""
+symbol = """"
+usage = ""arvo""
+desc = ""Timing vane of Arvo. Allows for applications to schedule events.""
+
++++
+
+**Behn** is the timing [vane](/reference/glossary/vane) (kernel module).
+It allows for applications to schedule events, which are managed in a simple
+priority queue. For example, [Clay](/reference/glossary/clay), the Urbit
+filesystem, uses Behn to keep track of time-specific file requests.
+[Eyre](/reference/glossary/eyre), the Urbit web vane, uses Behn for timing-out
+HTTP sessions.
+
+Behn is located in `/base/sys/vane/behn.hoon` within [Arvo](/reference/glossary/arvo).
+
+### Further Reading
+
+- [The Behn reference](/reference/arvo/behn/behn): A technical guide to the Behn vane.
+"
+bowl,,arvo,Useful data given to a Gall agent or thread.,"+++
+title = ""Bowl""
+
+[glossaryEntry.bowl]
+name = ""bowl""
+symbol = """"
+usage = ""arvo""
+desc = ""Useful data given to a Gall agent or thread.""
+
++++
+
+The **bowl** contains useful data about the current
+[ship](/reference/glossary/ship) and context. It is given to a
+[thread](/reference/glossary/thread) or [Gall](/reference/glossary/gall)
+[agent](/reference/glossary/agent) whenever it processes an event. It contains
+the current time, some entropy, the name of the ship, the source of the event,
+and other relevant information.
+
+#### Further reading
+
+- [Gall data-types reference](/reference/arvo/gall/data-types#bowl): Details of
+  the `bowl` data structure used by Gall.
+- [The threads guide](/guides/additional/threads/input#bowl): This includes
+  details about the bowl given to threads.
+"
+bridge,,azimuth,A client made for interacting with Azimuth.,"+++
+title = ""Bridge""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.bridge]
+name = ""bridge""
+symbol = """"
+usage = ""azimuth""
+desc = ""A client made for interacting with Azimuth.""
+
++++
+
+**Bridge** is a client made for interacting with
+[Azimuth](/reference/glossary/azimuth). It's the recommended way to receive,
+send, and manage your Urbit identity, and it's by far the easiest way to
+generate the [keyfile](/reference/glossary/keyfile) required to boot your
+[ship](/reference/glossary/ship). Most Bridge functions are accessed by ""logging
+in"" to an identity's ownership address or one of its [proxy
+addresses](/reference/glossary/proxies). It's accessed at
+[bridge.urbit.org](https://bridge.urbit.org/).
+
+Below are some important functions of Bridge.
+
+#### Actions
+
+- **Claim an invite**: If you've been given a planet invite code/link, you claim
+  the planet through Bridge.
+- **Spawn Planets/Stars:** Spawn a child from a
+  [galaxy](/reference/glossary/galaxy) or a [star](/reference/glossary/star). If
+  on [L2](/reference/glossary/rollups), you can generate planet invite codes.
+- **Accept sponsorship request:** - Accept a sponsorship request to a galaxy or star.
+- **Transfer:** Send the Urbit identity to another Ethereum address or a new
+  Master Ticket.
+- **Accept incoming transfer:** If someone is trying to send you an Urbit
+  identity, you must use this action to receive it.
+- **Cancel outgoing transfer:** Cancel a transfer that you initiated before the
+  recipient has accepted it.
+- **Generate Arvo keyfile:** Generate the keyfile to boot a ship with your Urbit
+  identity.
+- **Change spawn proxy:** Assign your spawn proxy to a new Ethereum address, or
+  set it to L2.
+- **Change management proxy:** Assign your transfer proxy to a new Ethereum
+  address.
+- **Set network keys:** Set new authentication and encryption keys used on your
+  Arvo ship. Will change your Arvo keyfile.
+- **Transfer to L2**: Transfer an [L1](/reference/glossary/azimuth) point to L2.
+
+### Further Reading
+
+- [bridge.urbit.org](https://bridge.urbit.org/): The Bridge website.
+- [Using Bridge](https://urbit.org/using/id/using-bridge): A guide to starting out with Bridge.
+- [The Azimuth concepts page](/reference/azimuth/advanced-azimuth-tools): A more in-depth explanation of our identity layer.
+"
+bunt,,hoon-nock,Produce the default/example value of a mold,"+++
+title = ""Bunt""
+
+[glossaryEntry.bunt]
+name = ""bunt""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Produce the default/example value of a mold""
+
++++
+
+In [Hoon](/reference/glossary/hoon), **bunting** a
+[mold](/reference/glossary/mold) produces its default/example value (or ""bunt
+value""). For example, the bunt of a null-terminated `list` is `~` (null, an
+empty list). The bunt of `@ud` (an unsigned decimal) is `0`. Bunting is done
+with the kettar [rune](/reference/glossary/rune) (`^*`), or more commonly its
+irregular form: a `*` prefix like `*@ud`, `*(list @t)`, etc.
+
+#### Further reading
+
+- [Kettar rune reference](/reference/hoon/rune/ket#-kettar): Details of the kettar rune.
+- [Hoon School: Molds lesson](/guides/additional/threads/input#bowl): This
+  lesson discusses bunt values.
+"
+card,,hoon-nock,The type of effects produced by agents and threads.,"+++
+title = ""Card""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.card]
+name = ""card""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The type of effects produced by agents and threads.""
+
++++
+
+A **card** is the data type for effects produced by
+[Gall](/reference/glossary/gall) [agents](/reference/glossary/agent) and
+[threads](/reference/glossary/thread). It may contain things like requests to
+[vanes](/reference/glossary/vane) (kernel modules),
+[pokes](/reference/glossary/poke) to other agents,
+[facts](/reference/glossary/fact) for subscribers, etc.
+
+### Further Reading
+
+- [Gall data types reference](/reference/arvo/gall/data-types#cardagent):
+  Documentation of the `card` type.
+- [App school: cards lesson](/guides/core/app-school/5-cards): A lesson on cards.
+"
+case,,arvo,A reference to a commit in Clay,"+++
+title = ""Case""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.case]
+name = ""case""
+symbol = """"
+usage = ""arvo""
+desc = ""A reference to a commit in Clay""
+
++++
+
+[Clay](/reference/glossary/clay) is [Arvo's](/reference/glossary/arvo)
+revision-controlled filesystem, and a **case** is a reference to a particular
+revision. A case may be a reference to a revision number, the date-time of the
+revision, or a revision tag.
+
+#### Further Reading
+
+- [Case data-type
+  reference](/reference/arvo/clay/data-types#case-specifying-a-commit): The
+  `case` entry of the Clay data type reference.
+"
+cask,,hoon-nock,A cell of a mark and a noun. Similar to a cage but with a simple noun rather than a vase in the tail.,"+++
+title = ""Cask""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.cask]
+name = ""cask""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A cell of a mark and a noun. Similar to a cage but with a simple noun rather than a vase in the tail.""
+
++++
+
+A **cask** is a [cell](/reference/glossary/cell) whose head is a
+[mark](/reference/glossary/mark) and whose tail is a
+[noun](/reference/glossary/noun). It is similar to a `cage` except with a simple
+noun rather than `vase` in the tail. Casks are primarily used by the
+[kernel](/reference/glossary/kernel) for sending data over the
+[Ames](/reference/glossary/ames) network, because `vase`s should only be used
+locally.
+"
+cell,,hoon-nock,An ordered pair of nouns in Hoon and Nock.,"+++
+title = ""Cell""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.cell]
+name = ""cell""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An ordered pair of nouns in Hoon and Nock.""
+
++++
+
+A **cell** is an ordered pair of [nouns](/reference/glossary/noun). It is a
+fundamental data type in both [Hoon](/reference/glossary/hoon) and
+[Nock](/reference/glossary/cell): a noun is either an
+[atom](/reference/glossary/atom) or a cell. Its [mold](/reference/glossary/mold)
+in Hoon is `^`, and it's formed with either square brackets like `[123 456]` or
+`:`-family [runes](/reference/glossary/rune). A cell can also be thought of as
+an internal node in the binary tree of a noun. It is similar to a cons-cell in
+Lisp.
+
+#### Further Reading
+
+- [`:`-family rune reference](/reference/hoon/rune/col): The various runes in
+  Hoon that form cells.
+"
+censure,,azimuth,Allows stars and galaxies to assign negative reputation information to other points of equal or lower rank.,"+++
+title = ""Censures""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.censure]
+name = ""censure""
+symbol = """"
+usage = ""azimuth""
+desc = ""Allows stars and galaxies to assign negative reputation information to other points of equal or lower rank.""
+
++++
+
+The **Censures** [Azimuth](/reference/glossary/azimuth) contract allows [stars](/reference/glossary/star) and [galaxies](/reference/glossary/galaxy) to assign negative reputation information to other points of equal or lower rank. This information is publicly visible and is intended to create an economic deterrent to bad behavior.
+
+Positive reputation information cannot be similarly assigned to Urbit identities but it may be inferred from a lack of censures.
+
+### Further Reading
+
+- [The Censures contract](https://github.com/urbit/azimuth/blob/master/contracts/Censures.sol): The code on GitHub.
+"
+claims,,azimuth,Allows Urbit identities to make publicly visible assertions about their owner.,"+++
+title = ""Claims""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.claims]
+name = ""claims""
+symbol = """"
+usage = ""azimuth""
+desc = ""Allows Urbit identities to make publicly visible assertions about their owner.""
+
++++
+
+The **Claims** [Azimuth](/reference/glossary/azimuth) contract allows Urbit identities to make publicly visible assertions about their owner. Such assertions are most commonly about the owner's identity, real-world or otherwise. A claim has three fields: the claim itself, the _protocol_, and the _dossier_.
+
+The claim itself is what you're attempting to assert the identity of, as in `@JohnDoe` for a Twitter account, or `1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa`
+
+The _dossier_ is the proof of a claim. It could be something like a link to a tweet from a known Twitter account saying, ""Hi! I'm ~lodleb-ritrul on Azimuth,"" or, in the case of cryptocurrency, claim itself signed with the relevant private key.
+
+The _protocol_ indicates what kind of thing of the claim is. `Twitter` for a Twitter account, and `Bitcoin` for a Bitcoin address.
+
+Points are limited to a maximum of 16 claims. It's good practice to remove any claims associated with a ship when it is about to be transferred to a new owner.
+
+### Further Reading
+
+- [The Claims contract](https://github.com/urbit/azimuth/blob/master/contracts/Claims.sol): The code on GitHub.
+"
+clay,,arvo,The filesystem and typed revision-control vane of Arvo.,"+++
+title = ""Clay""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.clay]
+name = ""clay""
+symbol = """"
+usage = ""arvo""
+desc = ""The filesystem and typed revision-control vane of Arvo.""
+
++++
+
+**Clay** is the typed, revision-controlled filesystem
+[vane](/reference/glossary/vane) (kernel module) and also contains Urbit's build
+system (formerly a separate vane called Ford before it was merged into Clay).
+Clay's revision control system is similar to Git.
+
+Clay contains a number of [desks](/reference/glossary/desk), which can be
+thought of as separate repos or branches, and contain the source code for your
+apps. The `%base` desk contains the [Arvo](/reference/glossary/arvo) kernel and
+vanes including Clay itself, as well as the standard libraries.
+
+Clay is located at `/base/sys/vane/clay.hoon` within Arvo.
+
+### Further Reading
+
+- [Using Your Ship](https://urbit.org/using/os/filesystem): A user guide that includes instructions on using Clay.
+- [The Clay tutorial](/reference/arvo/clay/clay): A technical guide to the Clay vane.
+"
+cold atom,,hoon-nock,An atom whose type is an exact value rather than a general aura.,"+++
+title = ""Cold atom""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""cold atom""]
+name = ""cold atom""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An atom whose type is an exact value rather than a general aura.""
+
++++
+
+A **cold atom** is an [atom](/reference/glossary/atom) whose type is an exact
+value equal to itself. This in contrast to a [warm
+atom](/reference/glossary/warm-atom), whose type is a general
+[aura](/reference/glossary/aura). Cold atoms have a `%` prefix, for example
+`%foo`, `%123`, `%0xdead.beef`, etc.
+
+### Further Reading
+
+- [Atoms and Strings](/reference/hoon/rune/constants): A guide to atoms.
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon
+  programming language.
+  - [“Hoon Syntax”](/guides/core/hoon-school/B-syntax#nouns): A Hoon School
+    lesson that explains how atoms work.
+"
+comet,,arvo,A type of ship on the Urbit network.,"+++
+title = ""Comet""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.comet]
+name = ""comet""
+symbol = """"
+usage = ""arvo""
+desc = ""A type of ship on the Urbit network.""
+
++++
+
+A **comet** is a kind of [ship](/reference/glossary/ship) on the [Ames](/reference/glossary/ames) network which
+may be quickly generated by anyone and which are virtually unlimited. They have
+many uses, including but not limited to:
+- free identities for new users to try things out before deciding to purchase a [planet](/reference/glossary/planet).
+- bots
+- remaining anonymous
+- testing software
+
+Comets have nearly all the same capabilities as a planet. The restrictions they
+do possess are technical constraints of the system due primarily to the fact
+that they have no presence on [Azimuth](/reference/glossary/azimuth), rather
+than purposefully placed blockades:
+
+- They may not [change their networking keys](/reference/glossary/bridge).
+- They may not spawn [moons](/reference/glossary/moon).
+ 
+If you wish to change your networking keys, we suggest generating a new comet.
+Moons are impossible for comets due to the structure of the address space.
+
+Some groups may also not allow comet membership.
+
+### Further reading
+
+- [Creating a Comet](https://urbit.org/getting-started/cli): A guide to spinning up a comet of your own.
+"
+commit,,arvo,A revision to a desk in the Clay filesystem.,"+++
+title = ""Commit""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.commit]
+name = ""commit""
+symbol = """"
+usage = ""arvo""
+desc = ""A revision to a desk in the Clay filesystem.""
+
++++
+
+[Clay](/reference/glossary/clay) is [Arvo's](/reference/glossary/arvo)
+revision-controlled filesystem, and a **commit** is a particular
+change/revision. [Desks](/reference/glossary/desk) may be mounted to the host
+(Unix/Windows) filesystem, their files edited, and the resulting changes
+committed with the `|commit` generator in the [dojo](/reference/glossary/dojo).
+"
+cons,,hoon-nock,"An ordered pair of values in Lisp, analogous to a cell in Hoon.","+++
+title = ""Cons""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.cons]
+name = ""cons""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An ordered pair of values in Lisp, analogous to a cell in Hoon.""
+
++++
+
+A **cons** (or cons-cell) is an ordered pair of values in the Lisp family of
+programming languages. One of the fundamental data-types in
+[Hoon](/reference/glossary/hoon) and [Nock](/reference/glossary/nock) is an
+analogous structure: a [cell](/reference/glossary/cell).
+"
+context,,hoon-nock,The symbols and values reachable from a point in some code.,"+++
+title = ""Context""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.context]
+name = ""context""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The symbols and values reachable from a point in some code.""
+
++++
+
+**Context** refers to the execution context of a program, which is the symbols
+reachable from a given point in the code, and the value of those symbols in that
+particular execution. In [Hoon](/reference/glossary/hoon), the context of a
+given expression is its [subject](/reference/glossary/subject), which is given
+as the argument to the compiled [nock](/reference/glossary/nock).
+
+"
+cord,,hoon-nock,An atom aura for a little-endian UTF-8 string.,"+++
+title = ""Cord""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.cord]
+name = ""cord""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An atom aura for a little-endian UTF-8 string.""
+
++++
+
+A **cord** is an [atom](/reference/glossary/atom)
+[aura](/reference/glossary/aura) for a little-endian UTF-8 string in
+[Hoon](/reference/glossary/hoon). Its aura is `@t`, and its syntax is any string
+of text surrounded by single quotes like `'Foo bar baz!'`.
+
+#### Further Reading
+
+- [Strings guide](/guides/additional/strings): A guide to strings in Hoon.
+"
+core,,core,A cell of battery and payload.,"+++
+title = ""Core""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.core]
+name = ""core""
+symbol = """"
+usage = ""core""
+desc = ""A cell of battery and payload.""
+
++++
+
+A **core** is a cell of a [`battery`](/reference/glossary/battery) and a
+[`payload`](/reference/glossary/payload). It is a Hoon construct similar
+in use to objects in object-oriented programming languages.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [“Cores”](/guides/core/hoon-school/F-cores#cores): A Hoon Tutorial lesson that discusses cores.
+"
+delegated sending,,azimuth,"A method by which a star can distribute planets, assigning them to a delegated planet.","+++
+title = ""Delegated Sending""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.""delegated sending""]
+name = ""delegated sending""
+symbol = """"
+usage = ""azimuth""
+desc = ""A method by which a star can distribute planets, assigning them to a delegated planet.""
+
++++
+
+The **Delegated Sending** [Azimuth](/reference/glossary/azimuth) contract is a way that a [star](/reference/glossary/star ) distributes [L1](/reference/glossary/azimuth) [planets](/reference/glossary/planet). After a star configures the Delegated Sending contract as its [spawn proxy](/reference/glossary/proxies) it can give invites to planets, and those invitees can subsequently send additional planets from that star to their friends, and pass on this invite power indefinitely. This contract keeps track of those operations in the form of the [Invite Tree](/reference/glossary/invite-tree), so the relationship between inviters and invitees is publicly known.
+
+With the introduction of the [L2](/reference/glossary/rollups) invite system,
+delegated sending is less commonly used.
+"
+desk,,arvo,A revision-controlled branch of the Clay filesystem.,"+++
+title = ""Desk""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.desk]
+name = ""desk""
+symbol = """"
+usage = ""arvo""
+desc = ""A revision-controlled branch of the Clay filesystem.""
+
++++
+
+A **desk** is an independently revision-controlled branch of a [ship](/reference/glossary/ship) that uses the [Clay](/reference/glossary/clay) filesystem. Each desk contains its own apps, [mark](/reference/glossary/mark) definitions, files, and so forth.
+
+Traditionally a ship has at least a `%base` desk, and typically `%garden` and `%landscape` desk among others. The `%base` desk has the kernel and base system software, while other desks are usually each for different apps. A desk is a series of numbered commits, the most recent of which represents the current state of the desk. A commit is composed of:
+
+1. An absolute time when it was created.
+2. A list of zero or more parents.
+3. A map from paths to data.
+
+### Further Reading
+
+- [Using Your Ship](https://urbit.org/using/os/filesystem): A user guide that includes instructions for using desks.
+"
+dill,,arvo,The terminal-driver vane of Arvo.,"+++
+title = ""Dill""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.dill]
+name = ""dill""
+symbol = """"
+usage = ""arvo""
+desc = ""The terminal-driver vane of Arvo.""
+
++++
+
+**Dill** is the terminal-driver [vane](/reference/glossary/vane). You run
+your urbit in your Unix terminal, and Unix sends every event—such as a keystroke
+or a change in the dimensions of the terminal window—to be handled by Dill.
+
+A keyboard event's journey from Unix to Dojo, the Urbit shell, can be imagined
+as diagrammed below:
+
+```
+Keystroke in Unix -> Vere (virtual machine) -> Arvo -> Dill -> the Dojo
+```
+
+Dill is located at `/base/sys/vane/dill.hoon` within
+[Arvo](/reference/glossary/arvo).
+
+### Further Reading
+
+- [The Dill tutorial](/reference/arvo/dill/dill): A technical guide to the Dill
+  vane.
+"
+document vote,,azimuth,A voting action taken by the Galactic Senate over Azimuth.,"+++
+title = ""Document Proposal""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.""document vote""]
+name = ""document vote""
+symbol = """"
+usage = ""azimuth""
+desc = ""A voting action taken by the Galactic Senate over Azimuth.""
+
++++
+
+A **document proposal** is a type of [vote](/reference/glossary/voting) action
+taken by the [Galactic Senate](/reference/glossary/senate) over
+[Azimuth](/reference/glossary/azimuth). By passing a document proposal,
+[Galaxies](/reference/glossary/galaxy) in the Senate agree to legitimize a
+document with arbitrary content. Such a document might make claims about the
+state of the world; an example document that would be subject to this type of
+vote might be a file that says, ""@urbit_senate is the official Twitter account
+of the senate, and is to be managed by John Doe until further notice.""
+"
+door,,door,A core the payload of which is a cell of sample and context.,"+++
+title = ""Door""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.door]
+name = ""door""
+symbol = """"
+usage = ""door""
+desc = ""A core the payload of which is a cell of sample and context.""
+
++++
+
+A **door** is a [core](/reference/glossary/core) the `payload` of which is a cell of `sample` and `context`.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [Doors lesson](/guides/core/hoon-school/K-doors): A Hoon School lesson that discusses doors.
+"
+double-boot,,arvo,When you boot an old copy of your pier on the live network.,"+++
+title = ""Double-boot""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.double-boot]
+name = ""double-boot""
+symbol = """"
+usage = ""arvo""
+desc = ""When you boot an old copy of your pier on the live network.""
+
++++
+
+**Double-booting** is when you have a second, older copy of your
+[pier](/reference/glossary/pier) and spin it up on the live network. This
+creates irreparable networking problems and requires you to perform a [factory
+reset](/reference/glossary/reset).
+
+[Ames](/reference/glossary/ames) (Urbit's networking protocol) has the unique
+property of ""exactly-once messaging"", meaning it guarantees a message sent to
+another ship will be delivered once, and once only. This property is highly
+desirable and greatly simplifies writing networked applications, but it requires
+that the ordering and receipt of every single message to every ship is carefully
+tracked by Ames.
+
+When an older copy of a ship is booted, it will not know about the newer
+messages it has sent and received, so will be out of sync with the remote ships
+it's communicating with. The remote ships will not resend messages they know to
+have already been delivered, your ship will reject their new messages because
+there will be a gap in the sequence, and the remote ship will refuse the
+messages you send because of reused message numbers. This situation cannot be
+fixed, and will create permanent networking issues with those ships. We
+therefore recommend you don't keep multiple copies of your pier lying around,
+and take great care to never boot an old copy if you do.
+
+### Further Reading
+
+- [Guide to Factory
+  Resets](https://operators.urbit.org/manual/id/guide-to-resets): How to perform
+  a factory reset through Bridge if you accidentally double-boot your ship.
+"
+dry gate,,hoon-nock,A gate that only accepts an argument of the type it specified.,"+++
+title = ""Dry Gate""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""dry gate""]
+name = ""dry gate""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A gate that only accepts an argument of the type it specified.""
+
++++
+
+A **dry gate** is a [gate](/reference/glossary/gate) that only accepts an
+argument of the type it explicitly specified. This is in contrast to a [wet
+gate](/reference/glossary/wet-gate), which can accept arguments of different
+types and transparently pass them through. The typical
+[rune](/reference/glossary/rune) for a dry gate is `|=`.
+
+### Further Reading
+
+- [Hoon School: Metals lesson](/guides/core/hoon-school/R-metals): This lesson covers
+  dry and wet gates.
+"
+duct,,arvo,A causal event chain for routing inter-vane messages in Arvo.,"+++
+title = ""Duct""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.duct]
+name = ""duct""
+symbol = """"
+usage = ""arvo""
+desc = ""A causal event chain for routing inter-vane messages in Arvo.""
+
++++
+
+[Arvo](/reference/glossary/arvo) is designed to avoid the usual state of complex
+event networks: event spaghetti. It keeps track of every event's cause so that
+is has a clear causal chain for every computation. At the bottom of every chain
+is a Unix I/O event, such as a network request, terminal input, file sync, or
+timer event. It pushes every step in the path the request takes onto the chain
+until it gets to the terminal cause of the computation. Then it uses this causal
+stack to route results back to the caller.
+
+The Arvo causal stack is called a **duct**. This is represented simply as a list
+of [paths](/reference/glossary/path), where each path represents a step in the
+causal chain. The first element in the path is the first letter of whichever
+[vane](/reference/glossary/vane) handled that step in the computation, or an
+empty element for Unix.
+
+### Further Reading
+
+- [Arvo overview](/reference/arvo/overview): technical details of how Arvo
+  works.
+"
+ecliptic,,azimuth,A contract that sets the rules for what is and is not possible on Azimuth.,"+++
+title = ""Ecliptic""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.ecliptic]
+name = ""ecliptic""
+symbol = """"
+usage = ""azimuth""
+desc = ""A contract that sets the rules for what is and is not possible on Azimuth.""
+
++++
+
+The **Ecliptic** contract sets the rules for what is and is not possible on Azimuth. It's the point of entry for interacting with the [Azimuth](/reference/glossary/azimuth) ledger data; the Azimuth contract itself is just data, and the Ecliptic contract is the logic for controlling that data. Examples of such logic include verifying permissions of the person asking to access their data, and ensuring a requested change is actually valid.
+
+The Senate (the voting body of [galaxies](/reference/glossary/galaxy)) has the power to replace
+Ecliptic via an [upgrade proposal](/reference/glossary/upgrade).
+"
+entropy,,arvo,Randomness used for things like cryptography by software.,"+++
+title = ""Entropy""
+
+[glossaryEntry.entropy]
+name = ""entropy""
+symbol = """"
+usage = ""arvo""
+desc = ""Randomness used for things like cryptography by software.""
+
++++
+
+**Entropy** is the randomness collected by an operating system or application for
+use in cryptography or other uses that require random data. In Urbit's case,
+entropy is provided to [Arvo](/reference/glossary/arvo) by the runtime
+[Vere](/reference/glossary/vere). The entropy is made available to
+[agents](/reference/glossary/agent) and [threads](/reference/glossary/thread) as
+the `eny` value in the [bowl](/reference/glossary/bowl). It's also available as
+`eny` in the [dojo](/reference/glossary/dojo) and `%say`/`%ask`
+[generators](/reference/glossary/generator).
+"
+event log,,arvo,A totally ordered list of every single Arvo event a ship has undergone. A ship's state is a pure function of its event log.,"+++
+title = ""Event Log""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.""event log""]
+name = ""event log""
+symbol = """"
+usage = ""arvo""
+desc = ""A totally ordered list of every single Arvo event a ship has undergone. A ship's state is a pure function of its event log.""
+
++++
+
+The **event log** of a [ship](/reference/glossary/ship) is a totally ordered list of every single [Arvo](/reference/glossary/arvo) event that ship has undergone. The state of a ship is a pure function of the event log.
+
+The event log is maintained by [Vere](/reference/glossary/vere).
+
+If the physical machine loses power and your urbit's state is 'lost' from memory, when your urbit restarts it will replay its entire event log and recover its last valid state from scratch.
+
+In practice, event logs become large and unwieldy over time. Periodically a
+snapshot of the permanent state is taken, so the entire event log needn't be
+replayed on reboot. You're still able to rebuild your state down to the last
+keystroke. This is due to the practice of persistence.
+
+Persistence, in the context of storing data in a computer system, means that data is stored in a non-volatile manner and that input must be recorded before the output result is performed. Thus, every event must be written to disk - or must be _persisted_ - before the event effects actually take place.
+
+The initial entries of the event log are created during the bootstrap sequence contained in a [Pill](/reference/glossary/pill).
+
+### Further Reading
+
+- [Pier](/reference/glossary/pier): The directory on disk which contains the ship's state.
+"
+eyre,,arvo,The web-server vane of Arvo. Handles all HTTP messages.,"+++
+title = ""Eyre""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.eyre]
+name = ""eyre""
+symbol = """"
+usage = ""arvo""
+desc = ""The web-server vane of Arvo. Handles all HTTP messages.""
+
++++
+
+**Eyre** is the web-server [vane](/reference/glossary/vane) (kernel module) that
+handles client-facing HTTP operations. Unix sends HTTP messages though to Eyre
+and Eyre produces HTTP messages in response. It is the counterpart to
+[Iris](/reference/glossary/iris), which is the server-facing HTTP vane.
+
+In general, apps and vanes do not call Eyre; rather, Eyre calls apps and vanes.
+Eyre uses [Gall](/reference/glossary/gall) to facilitate communication with
+apps.
+
+Eyre is located at `/base/sys/vane/eyre.hoon` within
+[Arvo](/reference/glossary/arvo).
+
+### Further Reading
+
+- [The Eyre tutorial](/reference/arvo/eyre/eyre): A technical guide to the Eyre vane.
+"
+face,,hoon-nock,A 'variable name' in Hoon.,"+++
+title = ""Face""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.face]
+name = ""face""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A 'variable name' in Hoon.""
+
++++
+
+A **face** is a name for a value, type or expression in
+[Hoon](/reference/glossary/hoon). In the expression `foo=42`, `foo` is the face
+of the value `42`. When that value is pinned to the
+[subject](/reference/glossary/subject) like `=+ foo=42`, subsequent expressions
+can reference `foo` and it will be substituted with `42`. Faces are part of
+Hoon's type system, and are replaced with tree addresses when compiled to
+[Nock](/reference/glossary/nock).
+
+#### Further reading
+
+- [Hoon school: Syntax lesson](/guides/core/hoon-school/B-syntax#preserving-values-with-faces): This
+  lesson discusses faces in more detail.
+"
+fact,,arvo,An update sent to subscribers by a Gall agent.,"+++
+title = ""Fact""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.fact]
+name = ""fact""
+symbol = """"
+usage = ""arvo""
+desc = ""An update sent to subscribers by a Gall agent.""
+
++++
+
+A **%fact** is a [gift](/reference/glossary/gift) given to subscribers by a
+[Gall](/reference/glossary/gall) [agent](/reference/glossary/agent). It is the
+primary medium for subscription updates.
+
+#### Further reading
+
+- [App school: cards lesson](/guides/core/app-school/5-cards): A lesson on cards,
+  which covers `%fact`s.
+- [App school: subscriptions lesson](/guides/core/app-school/8-subscriptions): A lesson on
+  subscriptions.
+"
+foo bar baz,,hoon-nock,These are just arbitrary placeholder words used in examples.,"+++
+title = ""Foo Bar Baz""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""foo bar baz""]
+name = ""foo bar baz""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""These are just arbitrary placeholder words used in examples.""
+
++++
+
+""foo"", ""bar"" and ""baz"" are conventional placeholders used in programming
+documentation. They are just arbitrary words used for examples, and have no
+semantic meaning in Hoon.
+"
+galaxy,,arvo,"8-bit Urbit addresses, sitting at the top of the identity hierarchy, that vote on network changes and act as infrastructural nodes.","+++
+title = ""Galaxy""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.galaxy]
+name = ""galaxy""
+symbol = """"
+usage = ""arvo""
+desc = ""8-bit Urbit addresses, sitting at the top of the identity hierarchy, that vote on network changes and act as infrastructural nodes.""
+
++++
+
+A **galaxy** can be one of two related things:
+
+- A kind of [Azimuth](/reference/glossary/azimuth) Urbit identity that sits at the top of the identity hierarchy. Galaxies, in this sense, have the power to issue [stars](/reference/glossary/star), meaning that all other kinds of identities ultimate derive from galaxies. Galaxies also form a [Senate](/reference/glossary/senate), the governing body of Azimuth. The Senate has the power to update the logic of Azimuth by [majority vote](/reference/glossary/voting).
+
+- A [ship](/reference/glossary/ship) on the Arvo network whose identity is a galaxy in the former definition. In this sense, galaxies act as infrastructure for the [Arvo](/reference/glossary/arvo) network, providing [Ames](/reference/glossary/ames)-related services, such as peer-to-peer routing and distributing [over-the-air software updates](/reference/glossary/ota-updates). Stars rely on galaxies for these services in the way that planets rely on stars.
+
+Galaxies are 8-bit, representable by numbers 0 to 255. This means that there are 256 possible galaxies; each of these galaxies is able to issue 255 [stars](/reference/glossary/star). Galaxies have one-syllable names like `~mul` or `~lux`.
+"
+gall,,arvo,"The application-management vane of Arvo. Userspace applications are stopped, started, and sandboxed by Gall.","+++
+title = ""Gall""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.gall]
+name = ""gall""
+symbol = """"
+usage = ""arvo""
+desc = ""The application-management vane of Arvo. Userspace applications are stopped, started, and sandboxed by Gall.""
+
++++
+
+**Gall** is the application-management [vane](/reference/glossary/vane) (kernel
+module). Userspace apps –⁠ daemons, really –⁠ are started, stopped, and sandboxed
+by Gall. Gall provides developers with a consistent interface for connecting
+their app to [Arvo](/reference/glossary/arvo). It allows applications and other
+vanes to send messages to applications and subscribe to data streams. Messages
+coming into Gall are routed to the intended application, and the response comes
+back along the same route. If the intended target is on another
+[ship](/reference/glossary/ship), Gall will route it behind the scenes through
+[Ames](/reference/glossary/ames) to the other ship.
+
+Gall is located at `/base/sys/vane/gall.hoon` within Arvo.
+
+### Further Reading
+
+- [App School](/guides/core/app-school/): Our guide to learning how to build apps on the Urbit platform using the Hoon programming language.
+- [Gall vane documentation](/reference/arvo/gall/gall): Documentation of the Gall vane.
+"
+garden,,arvo,"The desk that serves Landscape, manages app front-ends and handles notifications.","+++
+title = ""Garden""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.garden]
+name = ""garden""
+symbol = """"
+usage = ""arvo""
+desc = ""The desk that serves Landscape, manages app front-ends and handles notifications.""
+
++++
+
+`%garden` is the [desk](/reference/glossary/desk) in
+[Arvo](/reference/glossary/arvo) that serves
+[Landscape](/reference/glossary/landscape). It also manages the front-end files
+for other apps, and handles notifications.
+"
+gate,,gate,A core with one arm named $. The Hoon equivalent of a function.,"+++
+title = ""Gate""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.gate]
+name = ""gate""
+symbol = """"
+usage = ""gate""
+desc = ""A core with one arm named $. The Hoon equivalent of a function.""
+
++++
+
+A **gate** is [core](/reference/glossary/core) with one [arm](/reference/glossary/arm)
+named `$` (buc). They are often called Hoon functions because they have many of
+the same properties of functions from other programming languages.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon 
+programming language.
+"
+generator,,arvo,A generator is kind of Hoon script you can run from the dojo.,"+++
+title = ""Generator""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.generator]
+name = ""generator""
+symbol = """"
+usage = ""arvo""
+desc = ""A generator is kind of Hoon script you can run from the dojo.""
+
++++
+
+A **generator** is something like a script in [Arvo](/reference/glossary/arvo).
+Generators are written in [Hoon](/reference/glossary/hoon) and run from the
+[dojo](/reference/glossary/dojo) like `+code`, `|hi ~zod`, `+vats`, etc. They
+are usually used for two things: printing system information and passing
+commands to the system or apps. Generators are either ordinary
+[gates](/reference/glossary/gate) (a ""naked generator"") or a `%say`/`%ask`
+generator with a more particular structure.
+
+#### Further reading
+
+- [Hoon school: gates](/guides/core/hoon-school/D-gates): This lesson on gates
+  also introduces generators.
+- [Hoon school: text processing](/guides/core/hoon-school/J-stdlib-text#say-generators):
+  This lesson includes `%say` generators.
+"
+gift,,arvo,A gift is an effect produced by agents and threads in response to a request from another agent or vane.,"+++
+title = ""Gift""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.gift]
+name = ""gift""
+symbol = """"
+usage = ""arvo""
+desc = ""A gift is an effect produced by agents and threads in response to a request from another agent or vane.""
+
++++
+
+A `%gift` [card](/reference/glossary/card) is an effect produced by
+[agents](/reference/glossary/agent) and [threads](/reference/glossary/thread).
+It is a *response* to a request from another agent or
+[vane](/reference/glossary/vane), as opposed to a `%pass` card, which is a
+*request*. The main kind of gift is a [fact](/reference/glossary/fact), which is
+an update given to subscribers.
+
+#### Further reading
+
+- [App school: cards](/guides/core/app-school/5-cards): A lesson on cards,
+  which covers `%gift`s.
+- [App school: subscriptions](/guides/core/app-school/8-subscriptions): A lesson on
+  subscriptions.
+"
+glob,,arvo,A bundle of front-end resources for an app.,"+++
+title = ""Glob""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.glob]
+name = ""glob""
+symbol = """"
+usage = ""arvo""
+desc = ""A bundle of front-end resources for an app.""
+
++++
+
+A **glob** is a bundle of front-end resources for an app which is served to a
+web client by the `%docket` [agent](/reference/glossary/agent) in the
+[%garden](/reference/glossary/garden) [desk](/reference/glossary/desk). The glob
+will typically contain an `index.html` file, along with CSS, JS, and other
+resources the web app needs. The glob for an app will be retrieved when you
+install it, either over [Ames](/reference/glossary/ames) or from an external web
+server.
+
+#### Further reading
+
+- [Glob reference](/reference/additional/dist/glob): Details on how to make and
+  distribute globs.
+- [The software distribution guide](/guides/additional/software-distribution): A
+  walk-through of putting together and distribution an app, including globs.
+"
+hd wallet,,azimuth,"A system of related Ethereum addresses that store and manage an Urbit identity, each a proxy with different permissions over its management.","+++
+title = ""HD Wallet""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.""hd wallet""]
+name = ""hd wallet""
+symbol = """"
+usage = ""azimuth""
+desc = ""A system of related Ethereum addresses that store and manage an Urbit identity, each a proxy with different permissions over its management.""
+
++++
+
+The **Urbit HD Wallet** (_Hierarchical Deterministic_ Wallet) is a system of related Ethereum addresses that's used to store and manage an Urbit identity. Each of these Ethereum addresses have different powers over the same identity, from setting networking keys for communicating in the [Arvo](/reference/glossary/arvo) network to transferring ownership of identities.
+
+The Ethereum address that has full powers over a given Urbit identity, including the ability to transfer ownership of the identity, is called the ownership address. Ethereum addresses with fewer powers – the ability to transfer ownership being notably absent – are known as [proxies](/reference/glossary/proxies). This scheme of compartmentalized powers allows wallet holders to only handle less valuable keys when they want to perform operations on an Urbit identity without risking their entire asset.
+
+If a proxy or ownership address is compromised or has its keys lost, it can always be rederived using the master ticket, which is the piece of entropy that was initially used to derive the HD wallet.
+
+### Further Reading
+
+- [The Azimuth concepts page](/reference/azimuth/azimuth): A more in-depth explanation of Azimuth.
+- [Urbit HD Wallet](/reference/azimuth/hd-wallet): An in-depth explanation of the HD wallet.
+"
+helm,,arvo,A library and set of generators to manage system settings and get reports.,"+++
+title = ""Helm""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.helm]
+name = ""helm""
+symbol = """"
+usage = ""arvo""
+desc = ""A library and set of generators to manage system settings and get reports.""
+
++++
+
+The [hood](/reference/glossary/hood) [agent](/reference/glossary/agent) is
+divided into three separate sub-apps: `%drum`, `%kiln` and `%helm`. **Helm**
+provides an interface to various system settings, functions and reports. Helm
+can give memory reports, control kernel message verbosity, ping other ships,
+manage [moons](/reference/glossary/moon), etc. Most of these functions are
+exposed in the [dojo](/reference/glossary/dojo) with Hood
+[generators](/reference/glossary/generator) (`|mass`, `|verb`, `|hi`, `|moon`,
+etc).
+"
+hood,,arvo,"The system app: comprised of Kiln, Drum and Helm.","+++
+title = ""Hood""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.hood]
+name = ""hood""
+symbol = """"
+usage = ""arvo""
+desc = ""The system app: comprised of Kiln, Drum and Helm.""
+
++++
+
+**Hood** is the ""system app"", it controls various basic functions of Arvo and
+provides an interface for some of those functions with
+[generators](/reference/glossary/generator) in the
+[dojo](/reference/glossary/dojo). While Hood is technically a single app, it's really three different apps under the hood:
+
+- `%kiln`: Manages desk and agent installation, updates, etc.
+- `%drum`: Provides an interface to [Dill](/reference/glossary/dill), the
+  terminal driver [vane](/reference/glossary/vane), for userspace apps.
+- [`%helm`](/reference/glossary/helm): Provides a user interface for various
+  low-level settings, kernel functions and reports.
+"
+hoon,,arvo,"A strict, higher-order typed functional programming language that compiles to Nock.","+++
+title = ""Hoon""
+
+[glossaryEntry.hoon]
+name = ""hoon""
+symbol = """"
+usage = ""arvo""
+desc = ""A strict, higher-order typed functional programming language that compiles to Nock.""
+
++++
+
+Hoon is a strict, higher-order typed functional programming language that compiles itself to [Nock](/reference/glossary/nock). As a result Hoon code is effectively implemented by the interpreter [Vere](/reference/glossary/vere). Programs for the Urbit operating system and kernel, [Arvo](/reference/glossary/arvo), are written in Hoon.
+
+The Hoon standard library and compiler is located in `/base/sys/hoon.hoon`
+within your urbit.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+- [Why Hoon?](https://urbit.org/blog/why-hoon): A blog post that explains why Urbit uses its own programming language.
+"
+invite tree,,azimuth,"The state stored by the delegated sending contract, recording who gave a planet to whom under a specific star.","+++
+title = ""Invite Tree""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.""invite tree""]
+name = ""invite tree""
+symbol = """"
+usage = ""azimuth""
+desc = ""The state stored by the delegated sending contract, recording who gave a planet to whom under a specific star.""
+
++++
+
+The **Invite Tree** is the state stored by the [Delegated Sending](/reference/glossary/delegated-sending) contract on [Azimuth](/reference/glossary/azimuth), and is a record of who gave a [planet](/reference/glossary/planet) to whom. This allows for community applications, such as a chat channel for all distantly related planets.
+"
+iris,,arvo,The server-side HTTP vane of Arvo. Its client-facing counterpart is Eyre.,"+++
+title = ""Iris""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.iris]
+name = ""iris""
+symbol = """"
+usage = ""arvo""
+desc = ""The server-side HTTP vane of Arvo. Its client-facing counterpart is Eyre.""
+
++++
+
+**Iris** is the web client [vane](/reference/glossary/vane) that handles HTTP
+requests to remote web servers. It is the counterpart to
+[Eyre](/reference/glossary/eyre), which is the web server vane.
+
+Iris is located at `/base/sys/vane/iris.hoon` within [Arvo](/reference/glossary/arvo).
+
+#### Further reading
+
+- [The Iris technical reference](/reference/arvo/iris/iris): Detailed technical
+  and developer documentation of Iris.
+"
+jael,,arvo,Security and encryption vane of Arvo.,"+++
+title = ""Jael""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.jael]
+name = ""jael""
+symbol = """"
+usage = ""arvo""
+desc = ""Security and encryption vane of Arvo.""
+
++++
+
+**Jael** is the [vane](/reference/glossary/vane) that keeps track of
+[Azimuth](/reference/glossary/azimuth) related information. For each
+[ship](/reference/glossary/ship), this consists of its networking keys, its revision
+number (or _life_), its factory reset number (or _rift_), and who the sponsor of the ship is.
+
+#### Further reading
+
+- [The Jael technical reference](/reference/arvo/jael/jael): In-depth technical
+  and developer documentation of Jael.
+"
+jet,,arvo,"A fast, external implementation of some Hoon/Nock which the runtime can use instead of the native code.","+++
+title = ""Jet""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.jet]
+name = ""jet""
+symbol = """"
+usage = ""arvo""
+desc = ""A fast, external implementation of some Hoon/Nock which the runtime can use instead of the native code.""
+
++++
+
+[Hoon](/reference/glossary/hoon) is compiled to
+[Nock](/reference/glossary/nock), a purely functional turing-complete combinator
+calculus that can be thought of as Urbit's assembly language or basic opcodes of
+the virtual machine. Nock is extremely minimalist, with only 11 basic operators,
+and consequently there are computations that cannot be *efficiently* implemented
+in Nock. To allow fast computation in these cases, Nock includes the ability to
+hand them off to a fast C implementation on the host system. These external
+implementations are called **jets**, and any Hoon/Nock code can be **jetted** in
+this way.
+
+#### Further reading
+
+- [Jet writing reference](/reference/runtime/jetting): developer documentation
+  on how to write jets.
+- [Nock documentation](/reference/nock/definition): how Nock works.
+"
+kelvin versioning,,hoon-nock,"A software versioning system that counts downwards to zero, at which point it will be permanently fixed and final.","+++
+title = ""Kelvin versioning""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""kelvin versioning""]
+name = ""kelvin versioning""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A software versioning system that counts downwards to zero, at which point it will be permanently fixed and final.""
+
++++
+
+Typical software versioning schemes (e.g. v3.1.45) count ever upwards with each
+new revision. **Kelvin versioning** does the opposite, counting down towards
+absolute zero. When the code in question reaches version 0, it is considered
+final and frozen, and there will be no further revisions. This system is used
+when a piece of code is intended to become a permanent fixed standard, that can
+be depended upon to not change ever.
+
+Kelvin versioning is most notably used for [Nock](/reference/glossary/nock),
+which is currently at version 4K - four versions away from its final, permanent
+form. The standard libraries and kernel modules of
+[Arvo](/reference/glossary/arvo) are also versioned in this way.
+"
+kernel,,arvo,The core components of an operating system; Arvo and its vanes in Urbit.,"+++
+title = ""Kelvin versioning""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.kernel]
+name = ""kernel""
+symbol = """"
+usage = ""arvo""
+desc = ""The core components of an operating system; Arvo and its vanes in Urbit.""
+
++++
+
+The **kernel** is the core, fundamental components of an operating system. In
+the case of [Arvo](/reference/glossary/arvo), it is `arvo.hoon`, its
+[vanes](/reference/glossary/vane) (kernel modules), and associated libraries.
+The code for Arvo's kernel is located in the `/sys` directory of the `%base`
+[desk](/reference/glossary/desk). ""Kernelspace"" is contrasted with ""userspace"",
+which includes [agents](/reference/glossary/agent),
+[threads](/reference/glossary/thread),
+[generators](/reference/glossary/generator), front-end resources and other
+non-kernel files in [Clay](/reference/glossary/clay).
+
+#### Further reading
+
+- [Arvo overview](/reference/arvo/overview): Technical overview of Arvo.
+"
+keyfile,,azimuth,A piece of information used to associate a ship with an Urbit identity.,"+++
+title = ""Keyfile""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.keyfile]
+name = ""keyfile""
+symbol = """"
+usage = ""azimuth""
+desc = ""A piece of information used to associate a ship with an Urbit identity.""
+
++++
+
+A **keyfile** is a piece of information used to associate a [ship](/reference/glossary/ship) with an Urbit identity so that the ship can use the [Arvo](/reference/glossary/arvo) network. A keyfile is dependent upon the [networking keys](/reference/glossary/bridge) that have been set for the identity; we recommend using [Bridge](/reference/glossary/bridge) to set the networking keys and to generate the corresponding keyfile.
+
+The keyfile is used as an argument in the command line when booting a ship. During the boot process, [Vere](/reference/glossary/vere) passes the keyfile into the Arvo state.
+
+### Further Reading
+
+- [Installation Guide](https://urbit.org/getting-started): Instructions on using a keyfile to boot a ship.
+"
+keywords,,hoon-nock,Reserved words in a programming language.,"+++
+title = ""Keywords""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.keywords]
+name = ""keywords""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Reserved words in a programming language.""
+
++++
+
+In programming languages, a **keyword** is a predefined, reserved word with
+special meaning to the compiler. Keywords are part of the syntax of a language
+and cannot be used as identifiers, like `int` in C.
+
+[Hoon](/reference/glossary/hoon) uses [runes](/reference/glossary/rune) for its
+basic operators, so it does not have any reserved alphanumeric keywords.
+Additionally, while there are many function names in the standard library, these
+can all be shadowed (though this is not always a good idea from a readability
+perspective).
+"
+kiln,,arvo,Kiln is the Hood sub-app that controls desk installation and updates.,"+++
+title = ""Kiln""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.kiln]
+name = ""kiln""
+symbol = """"
+usage = ""arvo""
+desc = ""Kiln is the Hood sub-app that controls desk installation and updates.""
+
++++
+
+The [hood](/reference/glossary/hood) [agent](/reference/glossary/agent) is
+divided into three separate sub-apps: `%drum`, `%kiln` and `%helm`. **Kiln** is
+the part that handles [desk](/reference/glossary/desk) installation and updates,
+and the running of the [agents](/reference/glossary/agent) they contain.
+"
+landscape,,arvo,A front-end user interface for Urbit.,"+++
+title = ""Landscape""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.landscape]
+name = ""landscape""
+symbol = """"
+usage = ""arvo""
+desc = ""A front-end user interface for Urbit.""
+
++++
+
+**Landscape** is a graphical web interface for your
+[ship](/reference/glossary/ship). Landscape allows you to install, manage and
+launch apps on your ship. 
+"
+leg,,hoon-nock,"A piece of data in the subject, one of the two types of wing.","+++
+title = ""Leg""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.leg]
+name = ""leg""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A piece of data in the subject, one of the two types of wing.""
+
++++
+
+A **leg** is a piece of data in the [subject](/reference/glossary/subject). Legs
+are one of the two types of [wing](/reference/glossary/wing), the other being an
+[arm](/reference/glossary/arm).
+"
+list,,hoon-nock,"A list is a basic datastructure in Hoon, similar to an array in other languages.","+++
+title = ""List""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.list]
+name = ""list""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A list is a basic datastructure in Hoon, similar to an array in other languages.""
+
++++
+
+A **list** is a basic data structure in [Hoon](/reference/glossary/hoon),
+similar to an array in other languages. The underlying structure of a list is a
+null-terminated n-tuple like `[1 2 3 4 ~]`. An empty list is just null (`~`). The
+`++list` mold-builder forms a list of the given type, like `(list @ud)`.
+
+#### Further Reading
+
+- [Hoon school: syntax](/guides/core/hoon-school/B-syntax#lists): This lesson
+  includes a section on lists.
+"
+loobean,,hoon-nock,Like boolean but 0 is True and 1 is False.,"+++
+title = ""Loobean""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.loobean]
+name = ""loobean""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Like boolean but 0 is True and 1 is False.""
+
++++
+
+*Boolean* is 1=True, 0=False. In [Hoon](/reference/glossary/hoon) and
+[Nock](/reference/glossary/nock) it's the opposite: 0 is True and 1 is False.
+This alternative scheme is sometimes called **loobean**.
+"
+lull,,arvo,Data types and interface definitions for vanes.,"+++
+title = ""Lull""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.lull]
+name = ""lull""
+symbol = """"
+usage = ""arvo""
+desc = ""Data types and interface definitions for vanes.""
+
++++
+
+**`lull.hoon`** is a library in the `/sys` folder of the `%base`
+[desk](/reference/glossary/desk) that defines the interfaces of the
+[vanes](/reference/glossary/vane) and the data-types those vanes use.
+
+#### Further reading
+
+- [Arvo reference documentation](/reference/arvo/overview): these docs include
+  API reference documentation for the various vanes.
+"
+mark,,arvo,A file type in the Clay filesystem.,"+++
+title = ""Mark""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.mark]
+name = ""mark""
+symbol = """"
+usage = ""arvo""
+desc = ""A file type in the Clay filesystem.""
+
++++
+
+A **mark** is a file-type in the [Clay](/reference/glossary/clay) filesystem. A
+mark is a file that defines filesystem information such as type, merge routines,
+diff routines, and patch algorithms.
+
+### Further Reading
+
+- [The Clay reference](/reference/arvo/clay/clay): Technical and developer
+  documentation of Clay.
+- [The marks reference](/reference/arvo/clay/marks/marks): Developer
+  documentation of marks.
+"
+metals,,hoon-nock,Core type variance.,"+++
+title = ""Metals""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.metals]
+name = ""metals""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Core type variance.""
+
++++
+
+""Variance"" describes the four possible relationships that type rules for
+[cores](/reference/glossary/core) are able to have to each other.
+[Hoon](/reference/glossary/hoon) imaginatively designates these by **metals**.
+Briefly:
+
+1. Covariance (`%zinc`) means that specific types nest inside of generic types:
+   it's like claiming that a core that produces a `%plant` can produce a
+   `%tree`, a subcategory of `%plant`. Covariance is useful for flexibility in
+   return values.
+
+2. Contravariance (`%iron`) means that generic types are expected to nest inside
+   of specific types: it's like claiming that a core that can accept a `%tree`
+   can accept a `%plant`, the supercategory of `%tree`. (Contravariance seems
+   counterintuitive for many developers when they encounter it for the first
+   time.) Contravariance is useful for flexibility in input values
+   ([samples](/reference/glossary/sample)).
+
+3. Bivariance (`%lead`) means that we can allow both covariant and contravariant
+   behavior. While bivariance is included for completeness, it is not commonly
+   used and only a few examples exist in the standard library for building
+   shared data structure cores.
+
+4. Invariance (`%gold`) means that types must mutually nest compatibly: a core
+   that accepts or produces a `%tree` can only accept or produce a `%tree`. This
+   is the default behavior of cores. Cores which allow variance are changing
+   that behavior.
+
+A `%gold` core can be cast or converted to any metal, and any metal can be cast
+or converted to `%lead`.
+
+
+### Further Reading
+
+- [Hoon School: metals](/guides/core/hoon-school/R-metals): This lesson covers
+  core variance.
+"
+mold,,hoon-nock,Data types in Hoon.,"+++
+title = ""Mold""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.mold]
+name = ""mold""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Data types in Hoon.""
+
++++
+
+**Molds** are data types in [Hoon](/reference/glossary/hoon).
+[Atom](/reference/glossary/atom) [auras](/reference/glossary/aura) like `@ud`
+are molds, as are more complex structures like `json`, `path`, `(list @ud)`,
+`(unit manx)`, `card:agent:gall`, `(map @tas (pair @t @ux))`, etc. Raw values
+may be type-cast to a mold, and molds can also be called as functions to coerce
+a value to its type (this is called ""molding"" or ""clamming""). Molds may be
+create with ""mold builder"" functions, or with `$`-family runes.
+
+### Further Reading
+
+- [Hoon school: types](/guides/core/hoon-school/E-types): A lesson on molds.
+
+- [Buc (`$`) rune reference](/reference/hoon/rune/buc): Details on the runes
+  that can create molds.
+"
+monad,,hoon-nock,A software design pattern in functional languages where functions wrap results in types that require additional computation.,"+++
+title = ""Monad""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.monad]
+name = ""monad""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A software design pattern in functional languages where functions wrap results in types that require additional computation.""
+
++++
+
+In functional programming languages, a **monad** is a pattern where functions
+wrap their return value in a type that requires additional computation. A common
+monad is the ""maybe"" type, way either contain a result or a null value. A series
+of functions that produce a ""maybe"" can then be composed together with a ""bind""
+operator. While Javascript promises are not technically monads, they follow a
+similar pattern.
+
+In [Hoon](/reference/glossary/hoon), there are a number of functions that are
+either monads or follow a similar pattern. [Threads](/reference/glossary/thread)
+are written this way, and the `unit` type and associate functions are similar to
+""maybe"".
+
+#### Further reading
+
+- [Threads guide](/guides/additional/threads/fundamentals): Learn how to write threads.
+- [stdlib reference section 2a](/reference/hoon/stdlib/2a): These functions are
+  for manipulating and composing units.
+"
+moon,,arvo,"A kind of ship on the Arvo network, issued by planets.","+++
+title = ""Moon""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.moon]
+name = ""moon""
+symbol = """"
+usage = ""arvo""
+desc = ""A kind of ship on the Arvo network, issued by planets.""
+
++++
+
+A **moon** is a kind of [ship](/reference/glossary/ship) on the [Arvo](/reference/glossary/arvo) network. Moons
+are child identities issued by [planets](/reference/glossary/planet), [stars](/reference/glossary/star), and
+[galaxies](/reference/glossary/galaxy). A moon is not independent; it is always subordinate to
+the ship that issued it. By this we mean that the networking keys for the moon
+are controlled by the parent, and may be altered or revoked at any time by that parent.
+
+Moons may be utilized for many purposes, including but not limited to:
+ - vanity identities
+ - backup identities incase the parent identity cannot be accessed
+ - identities for children
+ - testing software
+ - bots
+
+Looking towards the future, we expect moons to also be utilized as identities
+for devices, such as such as phones, desktops, smart TVs, and digital thermostats
+
+Unlike planets, stars, and galaxies, moons have no presence on
+[Azimuth](/reference/glossary/azimuth). Moons are representable with 64 bits and have long names
+like `~doznec-salfun-naptul-habrys`, the latter half of which is inherited from
+their parent planet.
+
+### Further Reading
+
+- [User manual: Basics](https://operators.urbit.org/manual/os/basics#moons): The
+  ""Moons"" section contains instructions for creating and managing moons.
+- [Lunar Urbit and the Internet of Things](https://urbit.org/blog/iot): Blog post on the past,
+  present, and future of moons.
+"
+move,,arvo,A kernel-level inter-vane message sent over ducts by Arvo.,"+++
+title = ""Move""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.move]
+name = ""move""
+symbol = """"
+usage = ""arvo""
+desc = ""A kernel-level inter-vane message sent over ducts by Arvo.""
+
++++
+
+**Moves** are kernel-level inter-vane messages sent over
+[ducts](/reference/glossary/duct) by [Arvo](/reference/glossary/arvo). The
+[cards](/reference/glossary/card) produced by
+[agents](/reference/glossary/agent) are converted into moves by
+[Gall](/reference/glossary/gall).
+
+### Further Reading
+
+- [The Arvo overview](/reference/arvo/overview): a technical overview of Arvo
+  that covers moves.
+- [Move trace tutorial](/reference/arvo/tutorials/move-trace): how to interpret
+  move traces when such kernel verbosity is enabled.
+"
+nock,,hoon-nock,"A purely functional typeless programming language, and Urbit's lowest-level language.","+++
+title = ""Nock""
+
+[glossaryEntry.nock]
+name = ""nock""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A purely functional typeless programming language, and Urbit's lowest-level language.""
+
++++
+
+**Nock** is a purely functional typeless programming language and acts as
+Urbit's lowest-level language. To be more precise, it is a minimalist Turing 
+complete [combinator calculus](https://en.wikipedia.org/wiki/Combinatory_logic).
+Nock can be thought of as the assembly-level language specification for Urbit.
+Nock is evaluated by the runtime system [Vere](/reference/glossary/vere).
+
+The only basic data type in Nock is the [atom](/reference/glossary/atom), which is a
+non-negative integer. Computation in Nock occurs through the use of
+[nouns](/reference/glossary/noun) (e.g. binary trees whose leaves are atoms) utilized
+in three different manners: formulas, subjects, and products. A _formula_ is a
+noun utilized as a function that takes in a noun, its _subject_, and returns a
+noun, its _product_.
+
+Code written in [Hoon](/reference/glossary/hoon) is compiled to Nock, though it is
+unnecessary to learn Nock to write code in Hoon.
+
+### Further Reading
+
+- [The Nock Tutorial](/reference/nock/): An-in depth technical guide.
+"
+noun,,hoon-nock,An atom or a cell. The basic data structure in Nock.,"+++
+title = ""Noun""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.noun]
+name = ""noun""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An atom or a cell. The basic data structure in Nock.""
+
++++
+
+A **noun** is an [atom](/reference/glossary/atom) or a cell, which is an ordered pair of nouns. This definition is recursive and ultimately means that a noun is a finite size binary tree whose leaves are atoms. A noun is the basic data structure in [Nock](/reference/glossary/nock).
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [“Hoon Syntax”](/guides/core/hoon-school/B-syntax#nouns): A Hoon Tutoral lesson that explains how nouns work.
+- [The Nock explanation](/reference/nock/): Includes a low-level explanation of nouns.
+"
+~,,hoon-nock,The ~ symbol means null in Hoon.,"+++
+title = ""~""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""~""]
+name = ""~""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The ~ symbol means null in Hoon.""
+
++++
+
+The **`~`** symbol (""sig"") represents *null* in
+[Hoon](/reference/glossary/hoon).
+"
+OTA,,arvo,Ships have the ability to upgrade themselves over the air. They receive updates from a sponsor star or galaxy.,"+++
+title = ""OTA Updates""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.OTA]
+name = ""OTA""
+symbol = """"
+usage = ""arvo""
+desc = ""Ships have the ability to upgrade themselves over the air. They receive updates from a sponsor star or galaxy.""
+
++++
+
+[Ships](/reference/glossary/ship) have the ability to upgrade themselves **over
+the air**. For the kernel and core applications, they receive updates from a
+sponsor [star](/reference/glossary/star) or
+[galaxy](/reference/glossary/galaxy). For other apps, they receive updates from
+the app's publisher.
+
+#### Further reading
+
+- [The Updates guide](https://operators.urbit.org/manual/os/updates):
+  Comprehensive user documentation of updates.
+"
+path prefix,,arvo,"The first three elements of a Clay file path denoting ship, desk and case (revision number).","+++
+title = ""Path Prefix""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.""path prefix""]
+name = ""path prefix""
+symbol = """"
+usage = ""arvo""
+desc = ""The first three elements of a Clay file path denoting ship, desk and case (revision number).""
+
+[glossaryEntry.""beak""]
+name = ""beak""
+symbol = ""beak""
+usage = ""arvo""
+desc = ""The first three elements of a Clay file path denoting ship, desk and case (revision number) as a three-element tuple.""
++++
+
+A **path prefix** is the first three elements of a
+[Clay](/reference/glossary/clay) [path](/reference/glossary/path). These three
+fields encode a `beak` in `path` form. A `beak` is a three-element tuple of
+[ship](/reference/glossary/ship), [desk](/reference/glossary/desk), and
+[case](/reference/glossary/case). Here's an example:
+
+```hoon
+/~sampel-palnet/base/~2022.9.4..17.13.12..5835
+```
+
+The first two fields are the ship and desk in which the target file resides.
+The third field (the `case`) is the desk revision. A `case` can be one
+of:
+
+- The revision date-time in `@da` format, as in the example above.
+- A revision number like `42` (`1` is the first commit and it's numbered sequentially).
+- A revision label like `foo`. People rarely label commits so this is seldom useful today.
+
+So you could do any of:
+
+```hoon
+/~sampel/base/~2022.9.4..17.13.12..5835
+/~sampel/base/42
+/~sampel/base/foo
+```
+
+In the dojo, there are a couple of short-hands for this prefix. The first is
+`%`, which is the local ship, current desk (typically `%base`) and the current
+date. The second short-hand is that any of these three elements can be replaced
+by `=`. Each `=` will be auto-filled with these defaults, for example
+`/=base=`, `/~sampel==`, etc. 
+
+A file path in the dojo would typically be entered like `%/gen/hood/code` or
+`/=garden=/sys/kelvin`.
+"
+beak,beak,arvo,"The first three elements of a Clay file path denoting ship, desk and case (revision number) as a three-element tuple.","+++
+title = ""Path Prefix""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.""path prefix""]
+name = ""path prefix""
+symbol = """"
+usage = ""arvo""
+desc = ""The first three elements of a Clay file path denoting ship, desk and case (revision number).""
+
+[glossaryEntry.""beak""]
+name = ""beak""
+symbol = ""beak""
+usage = ""arvo""
+desc = ""The first three elements of a Clay file path denoting ship, desk and case (revision number) as a three-element tuple.""
++++
+
+A **path prefix** is the first three elements of a
+[Clay](/reference/glossary/clay) [path](/reference/glossary/path). These three
+fields encode a `beak` in `path` form. A `beak` is a three-element tuple of
+[ship](/reference/glossary/ship), [desk](/reference/glossary/desk), and
+[case](/reference/glossary/case). Here's an example:
+
+```hoon
+/~sampel-palnet/base/~2022.9.4..17.13.12..5835
+```
+
+The first two fields are the ship and desk in which the target file resides.
+The third field (the `case`) is the desk revision. A `case` can be one
+of:
+
+- The revision date-time in `@da` format, as in the example above.
+- A revision number like `42` (`1` is the first commit and it's numbered sequentially).
+- A revision label like `foo`. People rarely label commits so this is seldom useful today.
+
+So you could do any of:
+
+```hoon
+/~sampel/base/~2022.9.4..17.13.12..5835
+/~sampel/base/42
+/~sampel/base/foo
+```
+
+In the dojo, there are a couple of short-hands for this prefix. The first is
+`%`, which is the local ship, current desk (typically `%base`) and the current
+date. The second short-hand is that any of these three elements can be replaced
+by `=`. Each `=` will be auto-filled with these defaults, for example
+`/=base=`, `/~sampel==`, etc. 
+
+A file path in the dojo would typically be entered like `%/gen/hood/code` or
+`/=garden=/sys/kelvin`.
+"
+path,,hoon-nock,A data type in Hoon that resembles a file path and is a list of @ta text strings.,"+++
+title = ""Path""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.path]
+name = ""path""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A data type in Hoon that resembles a file path and is a list of @ta text strings.""
+
++++
+
+A **path** is a data type in [Hoon](/reference/glossary/hoon). It is a
+[list](/reference/glossary/list) of `@ta` text strings, and its syntax looks
+like `/foo/bar/baz`. This type resembles a file path and while it *is* used for
+file paths in [Clay](/reference/glossary/clay) (the filesystem
+[vane](/reference/glossary/vane)), it's a more general type and is used in other
+cases as well, such as subscription paths and [wires](/reference/glossary/wire).
+"
+@p,,hoon-nock,An atom aura in Hoon used for ship names like ~sampel-palnet.,"+++
+title = ""@p""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""@p""]
+name = ""@p""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An atom aura in Hoon used for ship names like ~sampel-palnet.""
+
++++
+
+A **`@p`** (pronounced ""pat P"") is an [atom](/reference/glossary/atom)
+[aura](/reference/glossary/aura) in [Hoon](/reference/glossary/hoon). This aura
+is used for ship names like `~sampel-palnet`, `~pocwet`, `~zod`, etc. It is
+often used informally to refer to an Urbit ID.
+
+#### Further reading
+
+- [Atom aura reference](/reference/hoon/auras): details of auras in Hoon.
+"
+payload,,payload,The set of data needed to run computations in a core.,"+++
+title = ""Payload""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.payload]
+name = ""payload""
+symbol = """"
+usage = ""payload""
+desc = ""The set of data needed to run computations in a core.""
+
++++
+
+A **payload** is the [subject](/reference/glossary/subject) of a
+[core](/reference/glossary/core). It is exists in the tail of the
+[cell](/reference/glossary/cell) that makes up a core, with the core's
+[battery](/reference/glossary/battery) in the head.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [“Cores”](/guides/core/hoon-school/F-cores#cores): A Hoon Tutorial lesson that discusses cores.
+"
+peek,,hoon-nock,A scry; a read-only request to the namespace of a local vane or agent.,"+++
+title = ""Peek""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.peek]
+name = ""peek""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A scry; a read-only request to the namespace of a local vane or agent.""
+
++++
+
+**Peek** is another word for a [scry](/reference/glossary/scry), which is a
+read-only request to the namespace of a local [vane](/reference/glossary/vane)
+or [agent](/reference/glossary/agent).
+
+#### Further Reading
+
+- [Scry reference](/reference/arvo/concepts/scry): developer documentation of
+  how scries work and how to use them.
+"
+pH,,arvo,A Gall app that is a framework for fleet testing using Aqua.,"+++
+title = ""pH""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.pH]
+name = ""pH""
+symbol = """"
+usage = ""arvo""
+desc = ""A Gall app that is a framework for fleet testing using Aqua.""
+
++++
+
+**pH** is a framework for writing [Aqua](/reference/glossary/aqua) test [threads](/reference/glossary/thread). pH comes with a number of default tests, as well as tools for building and executing custom tests.
+"
+pier,,arvo,The stored state of an Urbit ship on disk.,"+++
+title = ""Pier""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.pier]
+name = ""pier""
+symbol = """"
+usage = ""arvo""
+desc = ""The stored state of an Urbit ship on disk.""
+
++++
+
+A **pier** is the directory which contains the state of an Urbit
+[ship](/reference/glossary/ship). It is automatically created in the current
+directory when booting a ship for the first time.
+
+Your pier should be kept safe - if it's deleted, you will need to perform a
+[factory reset](/reference/glossary/reset) in order to inform the rest of the network
+that your ship's state has been lost.
+
+Note that a backup should usually _not_ be taken of your pier as a means of
+keeping it safe - once the ship is run on the network, the backup will be
+outdated and running from it will necessitate a factory reset. A running ship
+automatically backs up its own state within the pier directory for recovery
+purposes, so as long as the pier is preserved, recovery from most problems is
+possible.
+
+### Further Reading
+
+- [Event Log](/reference/glossary/eventlog): The main important content of the pier directory.
+- [Guide to Factory Resets](https://urbit.org/using/id/guide-to-resets): Instructions on
+  performing a factory reset.
+- [Ship Troubleshooting](https://urbit.org/using/os/ship-troubleshooting): General instructions on getting your ship to work, which includes network connectivity issues.
+"
+pill,,arvo,A bootstrap sequence to launch an Urbit ship for the first time.,"+++
+title = ""Pill""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.pill]
+name = ""pill""
+symbol = """"
+usage = ""arvo""
+desc = ""A bootstrap sequence to launch an Urbit ship for the first time.""
+
++++
+
+A **Pill** is a bootstrap sequence to launch an Urbit ship for the first time. The [event log](/reference/glossary/eventlog) begins with the bootstrap sequence of a Pill.
+
+A Pill consists of three ordered lists:
+ * A list of events which are interpreted by Nock to create an [Arvo](/reference/glossary/arvo) kernel.
+ * A list of Arvo events to run once the Arvo kernel is created.
+ * A list of userspace events to run once the Arvo events have been run. Currently, this consists of setting up the [Clay](/reference/glossary/clay) file system.
+"
+planet,,arvo,An Urbit identity at the bottom of the identity hierarchy. Issued by stars.,"+++
+title = ""Planet""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.planet]
+name = ""planet""
+symbol = """"
+usage = ""arvo""
+desc = ""An Urbit identity at the bottom of the identity hierarchy. Issued by stars.""
+
++++
+
+A **planet** is can be one of two related things:
+
+- A kind of [Azimuth](/reference/glossary/azimuth) Urbit identity that sits at the bottom of the identity hierarchy. Planets act as independent identities for use by individual humans as peers on the [Arvo](/reference/glossary/arvo) network. Planets are issued by [stars](/reference/glossary/star), and receive services such as peer-to-peer routing and [over-the-air software updates](/reference/glossary/ota-updates) from the star that sponsors them.
+
+- A [ship](/reference/glossary/ship) on the Arvo network whose identity is a planet in the former definition. Planets, in the second sense, have the power to issue [moons](/reference/glossary/moon). Moons are Arvo ships that are meant for use with devices, are completely subordinated from their parent planet, and have no Azimuth presence. 
+
+Planets have addresses that are representable by 32 bits. This means that there are nearly 4.3 billion possible planets. Planets have four-syllable names like `~morzod-ballet` or `~rovnys-ricfer`.
+"
+poke,,arvo,A one-off request/action passed from one Gall agent to another.,"+++
+title = ""Poke""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.poke]
+name = ""poke""
+symbol = """"
+usage = ""arvo""
+desc = ""A one-off request/action passed from one Gall agent to another.""
+
++++
+
+A **poke** is a kind of `note` passed from one
+[agent](/reference/glossary/agent) to another in a
+[card](/reference/glossary/card). A poke is a one-off request/action, as opposed
+to an ongoing subscription. A poke may contain any kind of data, and may go over
+the network to remote ships. A poke is handled by the `++on-poke`
+[arm](/reference/glossary/arm) of an agent.
+
+#### Further reading
+
+- [App school: cards](/guides/core/app-school/5-cards): A lesson on cards,
+  which includes pokes.
+- [App school: pokes](/guides/core/app-school/6-pokes): A lesson on pokes.
+"
+proxies,,azimuth,Ethereum addresses in the Urbit HD Wallet that have limited powers.,"+++
+title = ""Proxies""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.proxies]
+name = ""proxies""
+symbol = """"
+usage = ""azimuth""
+desc = ""Ethereum addresses in the Urbit HD Wallet that have limited powers.""
+
++++
+
+**Proxies** are Ethereum addresses in the [Urbit ID](/reference/glossary/azimuth)
+system that have limited powers. They are lower-powered ""siblings"" of the
+ownership key, which has the sole power to transfer the assigned Urbit identity.
+Using [Bridge](/reference/glossary/bridge), you can change the Ethereum addresses
+used for your proxies. If you use the [Urbit HD
+wallet](/reference/glossary/hdwallet), your proxies have already been set.
+
+There are three types of proxy.
+
+- **Management Proxy**
+
+The management proxy can configure or set Arvo networking keys and conduct sponsorship-related operations.
+
+- **Voting Proxy**
+
+The voting proxy can cast votes on behalf of its assigned point on new proposals, including changes to [Ecliptic](/reference/glossary/ecliptic). The voting proxy is unique to [galaxies](/reference/glossary/galaxy), since only power galaxies have seats in the Senate.
+
+- **Spawn Proxy**
+
+Creates new child points given Ethereum address. For [stars](/reference/glossary/star) and [galaxies](/reference/glossary/galaxy) only.
+
+
+### Further Reading
+
+- [Azimuth glossary page](/reference/glossary/azimuth): The glossary entry for Azimuth.
+- [The Azimuth concepts page](/reference/azimuth/advanced-azimuth-tools): A more in-depth explanation of Azimuth, including information the storage of Urbit identities.
+"
+replay,,arvo,How Vere computes the state of a ship's Arvo instance from an event log.,"+++
+title = ""Replay""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.replay]
+name = ""replay""
+symbol = """"
+usage = ""arvo""
+desc = ""How Vere computes the state of a ship's Arvo instance from an event log.""
+
++++
+
+**Replay** is how [Vere](/reference/glossary/vere) computes the state of a ship's [Arvo](/reference/glossary/arvo) instance from the [event log](/reference/glossary/eventlog) after a ship reboots. In order to avoid replaying the entire event log, Replay takes a snapshot of the current state of the ship approximately once every ten minutes. Then when a ship reboots, Replay loads the most recent snapshot and replays events from the event log up to the most recent event.
+
+### Further Reading
+
+- [The Vere tutorial](/reference/runtime/): An in-depth technical guide to Vere.
+"
+roller,,azimuth,A service that batches L2 transactions and submits them to Azimuth on the Ethereum blockchain,"+++
+title = ""Roller""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.roller]
+name = ""roller""
+symbol = """"
+usage = ""azimuth""
+desc = ""A service that batches L2 transactions and submits them to Azimuth on the Ethereum blockchain""
+
++++
+
+A **roller** is a service that can be run on a [ship](/reference/glossary/ship)
+that accepts [L2](/reference/glossary/rollups)
+[Azimuth](/reference/glossary/azimuth) transactions, bundles them together, and
+submits the batch to Azimuth on the Ethereum blockchain. Tlon runs the roller
+used by the default [Bridge](/reference/glossary/bridge) instance at
+[bridge.urbit.org](https://bridge.urbit.org), but anyone can run their own -
+especially if they want to submit large volumes of transactions.
+
+### Further reading
+
+- [Layer 2 for planets](https://operators.urbit.org/manual/id/layer-2-for-planets): Essential
+  information for planet owners on layer 2 or considering a move to layer 2
+- [The Gang Solves the Gas Crisis](https://urbit.org/blog/rollups): A casual overview of how
+  naive rollups works.
+- [Layer 2 Overview](/reference/azimuth/l2/layer2): where developers should go
+  to learn about the technical details of naive rollups.
+- [Custom Roller Tutorial](/reference/azimuth/l2/roller-tutorial): tutorial on how to
+  set up your own L2 roller.
+"
+rune,,hoon-nock,Runes are the fundamental operators in the Hoon language.,"+++
+title = ""Rune""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.rune]
+name = ""rune""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""Runes are the fundamental operators in the Hoon language.""
+
++++
+
+**Runes** are the fundamental operators/functions in the
+[Hoon](/reference/glossary/hoon) programming language, and the building blocks
+of Hoon expressions. Runes are digraphs made of two ASCII special characters,
+for example `:-`, `!<`, `^-`, `?:`, `.^`, etc. Most runes take a fixed number of
+arguments (usually 1-4), or else an arbitrary number of arguments terminated
+with `==`. Runes are organized into 11 main families by their first character,
+so for example the `:`-family forms [cells](/reference/glossary/cell), and has
+variations like `:-`,`:_`, `:~`, `:^`, etc, to create different kinds of cells.
+Runes are composed together to create complex expressions.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon
+  programming language.
+  - [“Hoon Syntax”](/guides/core/hoon-school/B-syntax#nouns): A Hoon School
+    lesson that explains runes.
+- [The Rune reference](/reference/hoon/rune): A comprehensive catalogue of the
+  different runes and how to use them.
+"
+runtime,,arvo,The binary you run your ship with in the terminal.,"+++
+title = ""Runtime""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.runtime]
+name = ""runtime""
+symbol = """"
+usage = ""arvo""
+desc = ""The binary you run your ship with in the terminal.""
+
++++
+
+The **runtime** is the `urbit` or `urbit.exe` binary you run your ship with in
+the terminal. The runtime's proper name is Vere - see the [Vere glossary
+entry](/reference/glossary/vere) for more details.
+
+### Further Reading
+
+- [The Vere tutorial](/reference/runtime/): An in-depth technical guide to Vere.
+"
+sail,,arvo,A domain specific language for Hoon. Expresses XML data structures to render webpages.,"+++
+title = ""Sail""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.sail]
+name = ""sail""
+symbol = """"
+usage = ""arvo""
+desc = ""A domain specific language for Hoon. Expresses XML data structures to render webpages.""
+
++++
+
+**Sail** is a domain specific language for Hoon.
+
+Sail is used to express XML data structures, which are commonly used for rendering HTML
+webpages. See the [Sail Guide](/guides/additional/sail) for more details.
+"
+sample,,hoon-nock,The argument taken by a function in Hoon.,"+++
+title = ""Sample""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.sample]
+name = ""sample""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The argument taken by a function in Hoon.""
+
++++
+
+The **sample** is the argument taken by a function (specifically a
+[gate](/reference/glossary/gate) or `door`) in [Hoon](/reference/glossary/hoon).
+The function defines the type and structure of its sample.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+"
+scry,,hoon-nock,A scry is a read-only request to the namespace of a local vane or agent.,"+++
+title = ""Scry""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.scry]
+name = ""scry""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A scry is a read-only request to the namespace of a local vane or agent.""
+
++++
+
+A **scry** is a read-only request to the namespace of a local
+[vane](/reference/glossary/vane) or [agent](/reference/glossary/agent). In
+[Hoon](/reference/glossary/hoon), scries are performed with the `.^`
+[rune](/reference/glossary/rune). Unlike other kinds of inter-vane or
+inter-agent communications, scries cannot alter the state of the ship or produce
+other side-effects. Additionally, scries are an exception to the purity of Hoon
+functions, and can be performed in-line. The scry interface is also exposed
+through [Eyre](/reference/glossary/eyre), the web-server vane, to web clients.
+
+#### Further Reading
+
+- [Scry reference](/reference/arvo/concepts/scry): developer documentation of
+  how scries work and how to use them.
+"
+senate,,azimuth,The body of all galaxies that govern Azimuth by majority vote.,"+++
+title = ""Senate""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.senate]
+name = ""senate""
+symbol = """"
+usage = ""azimuth""
+desc = ""The body of all galaxies that govern Azimuth by majority vote.""
+
++++
+
+The **Galactic Senate** is the body of all [galaxies](/reference/glossary/galaxy) that governs
+[Azimuth](/reference/glossary/azimuth) by [majority vote](/reference/glossary/voting). There are two types of
+votes: an [upgrade proposal](/reference/glossary/upgrade), which is a motion to update the logic
+of Azimuth (i.e. [Ecliptic](/reference/glossary/ecliptic)), and a [document
+proposal](/reference/glossary/docvote), which is a motion to legitimize or approve the content of an
+arbitrary document.
+"
+ship,,arvo,An instance of an Urbit computer that is a peer on the network.,"+++
+title = ""Ship""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.ship]
+name = ""ship""
+symbol = """"
+usage = ""arvo""
+desc = ""An instance of an Urbit computer that is a peer on the network.""
+
++++
+
+A **ship** is an instance of an Urbit computer that is a peer on the [Arvo](/reference/glossary/arvo) network.
+
+A ship can be one of five classes:
+
+- [comets](/reference/glossary/comet), disposable identities.
+- [moons](/reference/glossary/moon), connected devices subordinated to a ship.
+- [planets](/reference/glossary/planet), individual users.
+- [stars](/reference/glossary/star), network infrastructure nodes.
+- [galaxy](/reference/glossary/galaxy), also network infrastructure nodes.
+
+To be able to use the Arvo network, planets, stars, and galaxies must be combined with an [Azimuth](/reference/glossary/azimuth)-based Urbit identity in the form of a [keyfile](/reference/glossary/keyfile).
+
+### Further Reading
+
+- [Install instructions](https://urbit.org/getting-started): Guide to installing Urbit, which includes instructions on booting with your Urbit identity.
+- [Ship Troubleshooting](https://urbit.org/using/os/ship-troubleshooting): General instructions on getting your ship to work, which includes network connectivity issues.
+- [Urbit ID Overview](https://urbit.org/overview/urbit-id)
+- [Pier](/reference/glossary/pier): The directory containing a ship's state.
+"
+slam,,hoon-nock,To slam a gate is to call the function with an argument.,"+++
+title = ""Slam""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.slam]
+name = ""slam""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""To slam a gate is to call the function with an argument.""
+
++++
+
+ **Slamming** a gate is another word for calling a gate with an argument. A gate
+is [core](/reference/glossary/core) with one [arm](/reference/glossary/arm)
+named `$` (buc). They are often called Hoon functions because they have many of
+the same properties of functions from other programming languages.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon
+  programming language.
+- [Hoon School: doors](/guides/core/hoon-school/K-doors): A guide to cores
+  including gates.
+"
+spider,,arvo,The Gall agent that manages threads.,"+++
+title = ""Spider""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.spider]
+name = ""spider""
+symbol = """"
+usage = ""arvo""
+desc = ""The Gall agent that manages threads.""
+
++++
+
+**Spider** is the [Gall](/reference/glossary/gall)
+[agent](/reference/glossary/agent) that manages
+[threads](/reference/glossary/thread).
+
+### Further Reading
+
+- [Threads guide](/guides/additional/threads/fundamentals): learn how to write
+  threads.
+"
+sponsor,,Sponsor,A peer from which you receive your software updates,"+++
+title = ""Sponsor""
+
+[glossaryEntry.sponsor]
+name = ""sponsor""
+symbol = """"
+usage = ""Sponsor""
+desc = ""A peer from which you receive your software updates""
++++
+
+**Sponsors** are a peer from which your software updates come from, currently. In 
+the future, they'll also provide network service (route discovery). At the moment,
+network service goes through [galaxies](/reference/glossary/galaxy).
+"
+star,,arvo,An Urbit identity sitting between stars and galaxies in the identity hierarchy. Infrastructural nodes for child planets.,"+++
+title = ""Star""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.star]
+name = ""star""
+symbol = """"
+usage = ""arvo""
+desc = ""An Urbit identity sitting between stars and galaxies in the identity hierarchy. Infrastructural nodes for child planets.""
+
++++
+
+A **star** is the kind of Urbit identity that sits between the [galaxy](/reference/glossary/galaxy) and [planets](/reference/glossary/planet) in the identity hierarchy. Stars act as infrastructure for the [Arvo](/reference/glossary/arvo) network, providing planets with [Ames](/reference/glossary/ames)-related services, such as peer-to-peer routing and distributing [over-the-air software updates](/reference/glossary/ota-updates). Stars rely on galaxies for these services in the way that planets rely on stars.
+
+A **star** can be one of two related things:
+
+- A kind of [Azimuth](/reference/glossary/azimuth) Urbit identity that sits between the [galaxy](/reference/glossary/galaxy) and [planets](/reference/glossary/planet) in the identity hierarchy. Stars, in this sense, have the power to issue [planets](/reference/glossary/planet), and are themselves are issued by galaxies.
+
+- A [ship](/reference/glossary/ship) on the Arvo network whose identity is a star in the former definition. In this sense, stars act as infrastructure for the [Arvo](/reference/glossary/arvo) network, providing planets with [Ames](/reference/glossary/ames)-related services, such as peer-to-peer routing and distributing [over-the-air software updates](/reference/glossary/ota-updates). Stars rely on galaxies for these services in the way that planets rely on stars.
+
+Stars have addresses that are representable by 16 bits. This means that there are 65,280 possible stars, and each of these stars is able to issue 65,535 planets. Stars have two-syllable names like `~taglux` or `~hallet`.
+"
+string,,hoon-nock,A string is a general term for a piece of text. Cords and tapes are the two main types in Hoon.,"+++
+title = ""String""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.string]
+name = ""string""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A string is a general term for a piece of text. Cords and tapes are the two main types in Hoon.""
+
++++
+
+**String** is the general programming term for a piece of text. In Hoon, there
+are two main kinds of strings: [cords](/reference/glossary/cord) and
+[tapes](/reference/glossary/tape). A `cord` (and its sub-sets `knot` and `term`)
+is UTF-8 text in a single [atom](/reference/glossary/atom). A `tape` is a
+[list](/reference/glossary/list) of single UTF-8 characters.
+
+#### Further Reading
+
+- [Strings guide](/guides/additional/strings): A guide to strings in Hoon.
+"
+subject oriented programming,,hoon-nock,The programming paradigm where each expression is evaluated against a piece of data called the subject and containing the expression's context.,"+++
+title = ""Subject Oriented Programming""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""subject oriented programming""]
+name = ""subject oriented programming""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The programming paradigm where each expression is evaluated against a piece of data called the subject and containing the expression's context.""
+
++++
+
+The Urbit operating system hews to a conceptual model wherein each expression
+takes place in a certain [context](/reference/glossary/context) (the
+[subject](/reference/glossary/subject)). While sharing a lot of practicality
+with other programming paradigms and platforms, Urbit's model is mathematically
+well-defined and unambiguously specified. Every expression of
+[Hoon](/reference/glossary/hoon) is evaluated relative to its subject, a piece
+of data that represents the environment, or the context, of an expression.
+
+#### Further reading
+
+- [Hoon School: subject-oriented programming](/guides/core/hoon-school/O-subject): A guide to
+  subject-oriented programming.
+"
+subject,,hoon-nock,The context against which a Hoon expression is evaluated.,"+++
+title = ""Subject""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.subject]
+name = ""subject""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""The context against which a Hoon expression is evaluated.""
+
++++
+
+The **subject** is the [context](/reference/glossary/context) a particular
+[Hoon](/reference/glossary/hoon) (and [Nock](/reference/glossary/nock))
+expression is evaluated against. Each [rune](/reference/glossary/rune) has
+exactly the context given to it by the previous one, and instead of modifying it
+in-place, an entirely new subject is produced for the next rune in the chain.
+Rather than the subject being an intangible, implicit context, it's an actual
+piece of data that can be referenced and manipulated as a whole. This system
+makes Hoon code a little like an onion, with a new immutable subject at each
+layer. Of course, the compiler is optimized so as not to literally duplicate the
+entire subject each time, but code behaves as though it does.
+
+#### Further reading
+
+- [Hoon School: subject-oriented programming](/guides/core/hoon-school/O-subject): A guide to
+  subject-oriented programming.
+"
+subscription,,arvo,One of the main methods of communication for Gall agents.,"+++
+title = ""Subscription""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.subscription]
+name = ""subscription""
+symbol = """"
+usage = ""arvo""
+desc = ""One of the main methods of communication for Gall agents.""
+
++++
+
+**Subscriptions** are one of the main ways [Gall](/reference/glossary/gall)
+[agents](/reference/glossary/agent) communicate. An agent will define a number
+of subscription [paths](/reference/glossary/path) in its `++on-watch`
+[arm](/reference/glossary/arm), and other agents (either local or remote) can
+subscribe. Once subscribed, they'll receive any
+[facts](/reference/glossary/fact) sent out on the path in question, until they
+either unsubscribe or are kicked.
+
+#### Further reading
+
+- [App School: subscriptions](/guides/core/app-school/8-subscriptions): A lesson on
+  Gall agent subscriptions.
+"
+tape,,hoon-nock,A type of string in Hoon. A list of UTF-8 characters.,"+++
+title = ""Tape""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.tape]
+name = ""tape""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A type of string in Hoon. A list of UTF-8 characters.""
+
++++
+
+A **tape** is a type of [string](/reference/glossary/string) in
+[Hoon](/reference/glossary/hoon). It's a [list](/reference/glossary/list) of
+single UTF-8 characters.
+
+#### Further Reading
+
+- [Strings guide](/guides/additional/strings): A guide to strings in Hoon.
+"
+thread,,arvo,A transient service used primarily for complex I/O operations by Gall agents.,"+++
+title = ""Thread""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.thread]
+name = ""thread""
+symbol = """"
+usage = ""arvo""
+desc = ""A transient service used primarily for complex I/O operations by Gall agents.""
+
++++
+
+A **thread** is like a transient [Gall](/reference/glossary/gall)
+[agent](/reference/glossary/agent). Unlike an agent, it can end and it can fail.
+The primary uses for threads are:
+
+1. Complex IO, like making a bunch of external API calls where each call depends
+   on the last. Doing this in an agent significantly increases its complexity
+   and the risk of a mishandled intermediary state corrupting permanent state.
+   If you spin the IO out into a thread, your agent only has to make one call to
+   the thread and receive one response.
+2. Testing - threads are very useful for writing complex tests for your agents.
+
+[Spider](/reference/glossary/spider) is the [Gall](/reference/glossary/gall)
+[agent](/reference/glossary/agent) that manages
+[threads](/reference/glossary/thread).
+
+### Further Reading
+
+- [Threads guide](/guides/additional/threads/fundamentals): learn how to write
+  threads.
+"
+trap,,trap,A core with one arm named $ and no sample.,"+++
+title = ""Trap""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.trap]
+name = ""trap""
+symbol = """"
+usage = ""trap""
+desc = ""A core with one arm named $ and no sample.""
+
++++
+
+A **trap** is a [core](/reference/glossary/core) with one arm named `$` and no sample. They are often used in similar ways to looping structures in other programming languages.
+
+### Further Reading
+
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon programming language.
+  - [Cores lesson: Trap section](/guides/core/hoon-school/F-cores#repeating-yourself-using-a-trap): A Hoon School lesson that uses traps to build recursive functions.
+"
+udon,,arvo,A domain specific language for Hoon. Similar to Markdown.,"+++
+title = ""Udon""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.udon]
+name = ""udon""
+symbol = """"
+usage = ""arvo""
+desc = ""A domain specific language for Hoon. Similar to Markdown.""
+
++++
+
+**Udon** is a domain specific language for Hoon.
+
+Udon is used to create documents, and is very similar to markdown.
+"
+userspace,,arvo,"Gall agents, threads, generators, front-ends and related files in Clay. That which is not in kernelspace.","+++
+title = ""Userspace""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.userspace]
+name = ""userspace""
+symbol = """"
+usage = ""arvo""
+desc = ""Gall agents, threads, generators, front-ends and related files in Clay. That which is not in kernelspace.""
+
++++
+
+**Userspace** is composed of [Gall](/reference/glossary/gall)
+[agents](/reference/glossary/agent), [threads](/reference/glossary/thread),
+[generators](/reference/glossary/generator), front-end resources and other
+non-kernel files in [Clay](/reference/glossary/clay). This is in contrast to
+[kernelspace](/reference/glossary/kernel), which is composed of
+[Arvo](/reference/glossary/arvo), its [vanes](/reference/glossary/vane) (kernel
+modules), and associated libraries.
+"
+vane,,arvo,An Arvo kernel module that performs essential system operations.,"+++
+title = ""Vane""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.vane]
+name = ""vane""
+symbol = """"
+usage = ""arvo""
+desc = ""An Arvo kernel module that performs essential system operations.""
+
++++
+
+A **vane** is an [Arvo](/reference/glossary/arvo) kernel module that performs essential system operations. The vanes are:
+
+
+- [Ames](/reference/glossary/ames), the peer-to-peer networking vane.
+- [Behn](/reference/glossary/behn), the timer vane.
+- [Clay](/reference/glossary/clay), the filesystem, revision-control and build
+  system vane.
+- [Dill](/reference/glossary/dill), the terminal-driver vane.
+- [Eyre](/reference/glossary/eyre), the HTTP vane.
+- [Gall](/reference/glossary/gall), the application vane.
+- [Iris](/reference/glossary/iris), the server HTTP vane.
+- [Jael](/reference/glossary/jael), the security vane.
+- [Khan](/reference/glossary/khan), the control vane.
+
+### Further Reading
+
+- [The Arvo tutorial](/reference/arvo/overview): An in-depth technical guide to Arvo and its vanes.
+"
+vase,,hoon-nock,"A pair of a type and noun, where the type describes the noun.","+++
+title = ""Vase""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.vase]
+name = ""vase""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A pair of a type and noun, where the type describes the noun.""
+
++++
+
+A **vase** is a pair of [`$type`](/reference/hoon/stdlib/4o#type) and
+[`$noun`](/reference/hoon/stdlib/2q#noun), where the type describes the noun.
+
+They're used all over Urbit to represent data whose type we can't know ahead of
+time. This often comes up when being asked to compile and run other Hoon code.
+It's also used to store data that could be any type, but where we want to know
+the type.
+
+### Further Reading
+
+- [Vase guide](/guides/additional/vases) - an overview of vases and the tools
+  for working with them.
+- [Standard library section 5c](/reference/hoon/stdlib/5c): This contains most
+  of the vase functions in the standard library.
+"
+vere,,arvo,"The Nock runtime environment and Urbit virtual machine, running on Unix.","+++
+title = ""Vere""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.vere]
+name = ""vere""
+symbol = """"
+usage = ""arvo""
+desc = ""The Nock runtime environment and Urbit virtual machine, running on Unix.""
+
++++
+
+**Vere**, pronounced ""Vair"", is the [Nock](/reference/glossary/nock) runtime environment and Urbit virtual machine. Vere is written in C, runs on Unix, and is the intermediate layer between your urbit and Unix. Unix system calls are made by Vere, not Arvo; Vere must also encode and deliver relevant external events to [Arvo](/reference/glossary/arvo). Vere is also responsible for implementing jets and maintaining the persistent state of each urbit (computed as a pure function of its [event log](/reference/glossary/eventlog) with [Replay](/reference/glossary/replay)). It also contains the I/O drivers for Urbit’s vanes, which are responsible for generating events from Unix and applying effects to Unix.
+
+When you boot your [ship](/reference/glossary/ship), Vere passes your [Azimuth](/reference/glossary/azimuth) [keyfile](/reference/glossary/keyfile) into the Arvo state, allowing a connection to the [Ames](/reference/glossary/ames) network.
+
+Vere consists of two processes that communicate via a socket: a daemon process in charge of managing I/O channels, and a worker process that acts as a Nock interpreter that is instructed by the daemon process.
+
+### Further Reading
+
+- [The Technical Overview](/overview/)
+- [The Vere tutorial](/reference/runtime/): An in-depth technical guide to Vere.
+"
+vote,,azimuth,Voting is a power available to galaxies in their capacities as members of the Galactic Senate.,"+++
+title = ""Voting""
+
+[extra]
+category = ""azimuth""
+
+[glossaryEntry.vote]
+name = ""vote""
+symbol = """"
+usage = ""azimuth""
+desc = ""Voting is a power available to galaxies in their capacities as members of the Galactic Senate.""
+
++++
+
+**Voting** is a power available to [galaxies](/reference/glossary/galaxy), in their
+capacities as members of the [Galactic Senate](/reference/glossary/senate), through
+an [Azimuth](/reference/glossary/azimuth) smart contract. Galaxies collectively make
+decisions about the governance of Azimuth and the [Arvo](/reference/glossary/arvo)
+network by voting. There are two types of proposals that can be voted on:
+an [upgrade proposal](/reference/glossary/upgrade) and a
+[document proposal](/reference/glossary/docvote).
+
+A proposal is always a Yes/No vote. The vote concludes at the end of 30 days,
+or whenever an absolute majority is reached, whichever comes first. Assuming a
+quorum of at least 64 galaxies (1/4 of the Senate) has been achieved, at the end
+of 30 days the option that has received the most votes is chosen. If a quorum
+is not achieved then no action is taken.
+
+In the case of an absolute majority (129 galaxies), the vote transaction that
+achieves that majority triggers the upgrade or document ratification. If 30 days
+passes without an absolute majority being reached, an explicit ""update vote
+status/check result"" transaction will need to be made. This can be performed by
+anyone at any time. Any effects from doing so will only take place if there was a
+majority vote in favor.
+"
+warm atom,,hoon-nock,An atom with an ordinary aura.,"+++
+title = ""Warm atom""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""warm atom""]
+name = ""warm atom""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""An atom with an ordinary aura.""
+
++++
+
+A **warm atom** is an [atom](/reference/glossary/atom) with an ordinary
+[aura](/reference/glossary/aura). The type of a warm atom is, conceptually, the
+set of all possible values for that aura. For example, the
+[cord](/reference/glossary/cord) `'foo'` nests under the type of the cord
+`'bar'` - they both have `@t` auras. This is in contrast to a [cold
+atom](/reference/glossary/cold-atom), where its type is an exact value.
+
+### Further Reading
+
+- [Atoms and Strings](/reference/hoon/rune/constants): A guide to atoms.
+- [Hoon School](/guides/core/hoon-school/): Our guide to learning the Hoon
+  programming language.
+  - [“Hoon Syntax”](/guides/core/hoon-school/B-syntax#nouns): A Hoon School
+    lesson that explains how atoms work.
+"
+wet gate,,hoon-nock,A gate that can take arguments of a type other that what it specified.,"+++
+title = ""Wet Gate""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.""wet gate""]
+name = ""wet gate""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A gate that can take arguments of a type other that what it specified.""
+
++++
+
+A **wet gate** is a [gate](/reference/glossary/gate) that can accept arguments
+of a type other than what it has specified, and transparently pass them through.
+This is in contrast to a [dry gate](/reference/glossary/dry-gate), which can
+only take arguments of the type it specified. The typical
+[rune](/reference/glossary/rune) for a wet gate is `|*`, as opposed to the usual
+`|=`.
+
+### Further Reading
+
+- [Hoon School: Metals](/guides/core/hoon-school/R-metals): This lesson covers
+  dry and wet gates.
+"
+wing,,hoon-nock,A piece of data or code in the subject. Either a leg or an arm.,"+++
+title = ""Wing""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.wing]
+name = ""wing""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A piece of data or code in the subject. Either a leg or an arm.""
+
++++
+
+A **wing** is a piece of data or code which can be referenced in the
+[subject](/reference/glossary/subject). A wing may either be a
+[leg](/reference/glossary/leg) or an [arm](/reference/glossary/arm).
+
+### Further Reading
+
+- [Hoon reference: Wings](/reference/hoon/limbs/wing)
+"
+wire,,hoon-nock,A tag specified for responses to requests a Gall agent makes to other agents or vanes.,"+++
+title = ""Wire""
+
+[extra]
+category = ""hoon-nock""
+
+[glossaryEntry.wire]
+name = ""wire""
+symbol = """"
+usage = ""hoon-nock""
+desc = ""A tag specified for responses to requests a Gall agent makes to other agents or vanes.""
+
++++
+
+A **wire** is a tag specified for responses to requests a
+[Gall](/reference/glossary/gall) [agent](/reference/glossary/agent) makes to
+other agents or [vanes](/reference/glossary/vane). The type of a wire is the
+same as a [path](/reference/glossary/path), having the format `/foo/bar/baz`.
+The wire lets an agent know what a particular message relates to. The content of
+the wire is up to the developer, depending on the needs and logic of their
+agent.
+"
+wrapper,,arvo,A library that takes a Gall agent core as its argument and augments its functionality.,"+++
+title = ""Wrapper""
+
+[glossaryEntry.wrapper]
+name = ""wrapper""
+symbol = """"
+usage = ""arvo""
+desc = ""A library that takes a Gall agent core as its argument and augments its functionality.""
+
++++
+
+A **wrapper** is a library that takes a [Gall](/reference/glossary/gall)
+[agent](/reference/glossary/agent) [core](/reference/glossary/core) as its
+argument, augmenting the functionality of the agent. The most common agent
+wrapper is the `dbug` library, which adds debugging functionality to an agent.
+
+### Further Reading
+
+- [App School](/guides/core/app-school/intro): A comprehensive guide to writing
+  Gall agents.
+"
+~zod,,arvo,The first galaxy: number 0,"+++
+title = ""~zod""
+
+[extra]
+category = ""arvo""
+
+[glossaryEntry.""~zod""]
+name = ""~zod""
+symbol = """"
+usage = ""arvo""
+desc = ""The first galaxy: number 0""
+
++++
+
+There are 256 [galaxies](/reference/glossary/galaxy), and `~zod` is the first:
+number `0`. This galaxy is usually the first place core system updates are
+published. Other galaxies then sync from `~zod` and distribute the update to
+their children. A fake `~zod` is also conventionally used for testing by
+developers.
+"
+zuse,,arvo,"A utility library included in the kernel, primarily dealing with cryptography and HTML/JSON parsing/printing.","+++
+title = ""Zuse""
+
+[glossaryEntry.zuse]
+name = ""zuse""
+symbol = """"
+usage = ""arvo""
+desc = ""A utility library included in the kernel, primarily dealing with cryptography and HTML/JSON parsing/printing.""
+
++++
+
+**Zuse** is a utility library included with the
+[kernel](/reference/glossary/kernel) at `/sys/zuse.hoon` in the `%base`
+[desk](/reference/glossary/zuse). Zuse contains a large number of useful
+functions, most prominently those relating to cryptography and HTML/JSON
+parsing/printing.
+
+Zuse is the farthest downstream component of the kernel in terms of dependency,
+so its version number is used to represent the version of the kernel as a whole.
+
+### Further Reading
+
+- [Zuse reference](/reference/hoon/zuse): Developer
+  documentation of various functions in `zuse.hoon`, particularly those relating
+  to JSON.
+"

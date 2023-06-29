@@ -12,7 +12,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["src/*.js"]
+      "resources": ["src/*.js", "*.css"]
     }
   ],
   "permissions": [],

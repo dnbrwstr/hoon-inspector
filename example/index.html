@@ -1,0 +1,1317 @@
+<script>
+    document.write(
+        '<script src="http://' +
+        (location.host || "localhost").split(":")[0] +
+        ':35729/livereload.js?snipver=1"></' +
+        "script>"
+    );
+</script>
+<link rel="stylesheet" href="../extension/styles.css">
+<script src="./index.js" type="module"></script>
+
+<body>
+    <div>
+        <div>
+            <div>
+                <div><a href="/reference">Reference</a><span>/</span><a href="/reference/hoon">Hoon</a></div>
+                <div><button>Search<div>⌘K</div></button></div>
+            </div>
+            <div>
+                <div>
+                    <div>
+                        <h2>Auras</h2>
+                    </div>
+                    <div>
+                        <article>
+                            <p>Auras are system of nested "soft types" on <a target="_self"
+                                    href="/reference/glossary/atom">atoms</a> that are used to track metadata about how
+                                a particular atom is to be interpreted. This is used for type checking as well as pretty
+                                printing.</p>
+                            <p>You can learn more about auras in <a target="_self"
+                                    href="/guides/core/hoon-school/B-syntax#nouns">Hoon school</a>.</p>
+                            <h3 id="table-of-auras" level="3">Table of Auras</h3>
+                            <div>
+                                <pre><div ><span >Aura         Meaning                                 Example Literal Syntax</span></div><div ><span >-------------------------------------------------------------------------</span></div><div ><span >@            empty aura</span></div><div ><span >@c           UTF-32                                  ~-~45fed</span></div><div ><span >@d           date</span></div><div ><span >  @da        absolute date                           ~2018.5.14..22.31.46..1435</span></div><div ><span >  @dr        relative date (ie, timespan)            ~h5.m30.s12</span></div><div ><span >@f           Loobean (for compiler, not castable)    &amp;</span></div><div ><span >@i           Internet address</span></div><div ><span >  @if        IPv4 address                            .195.198.143.90</span></div><div ><span >  @is        IPv6 address                            .0.0.0.0.0.1c.c3c6.8f5a</span></div><div ><span >@n           nil (for compiler, not castable)        ~</span></div><div ><span >@p           phonemic base (ship name)               ~sorreg-namtyv</span></div><div ><span >@q           phonemic base, unscrambled              .~litsyn-polbel</span></div><div ><span >@r           IEEE-754 floating-point</span></div><div ><span >  @rh        half precision (16 bits)                .~~3.14</span></div><div ><span >  @rs        single precision (32 bits)              .6.022141e23</span></div><div ><span >  @rd        double precision (64 bits)              .~6.02214085774e23</span></div><div ><span >  @rq        quad precision (128 bits)               .~~~6.02214085774e23</span></div><div ><span >@s           signed integer, sign bit low</span></div><div ><span >  @sb        signed binary                           --0b11.1000</span></div><div ><span >  @sd        signed decimal                          --1.000.056</span></div><div ><span >  @sv        signed base32                           -0v1df64.49beg</span></div><div ><span >  @sw        signed base64                           --0wbnC.8haTg</span></div><div ><span >  @sx        signed hexadecimal                      -0x5f5.e138</span></div><div ><span >@t           UTF-8 text (cord)                       'howdy'</span></div><div ><span >  @ta        ASCII text (knot)                       ~.howdy</span></div><div ><span >    @tas     ASCII text symbol (term)                %howdy</span></div><div ><span >@u              unsigned integer</span></div><div ><span >  @ub           unsigned binary                      0b11.1000</span></div><div ><span >  @ud           unsigned decimal                     1.000.056</span></div><div ><span >  @uv           unsigned base32                      0v1df64.49beg</span></div><div ><span >  @uw           unsigned base64                      0wbnC.8haTg</span></div><div ><span >  @ux           unsigned hexadecimal                 0x5f5.e138</span></div></pre>
+                            </div>
+                            <h3 id="bitwidth" level="3">Bitwidth</h3>
+                            <p>Capital letters at the end of auras indicate the bitwidth in binary powers of two,
+                                starting from A.</p>
+                            <div>
+                                <pre><div ><span >        @udD    unsigned single-byte (8-bit) decimal</span></div><div ><span >        @tD     8-bit ASCII text</span></div><div ><span >        @rhE    half-precision (16-bit) floating-point number</span></div><div ><span >        @uxG    unsigned 64-bit hexadecimal</span></div><div ><span >        @uvJ    unsigned, 512-bit integer (frequently used for entropy)</span></div></pre>
+                            </div>
+                            <h3 id="nesting" level="3">Nesting</h3>
+                            <p>A given aura nests under any aura whose name is a substring or extension of the given
+                                aura:</p>
+                            <div>
+                                <pre><div ><span >&gt; :-  (~(nest ut [%atom %ud ~]) | [%atom %u ~])</span></div><div ><span >      (~(nest ut [%atom %ud ~]) | [%atom %udx ~])</span></div><div ><span >[%.y %.y]</span></div></pre>
+                            </div>
+                            <p>but does not nest "sideways":</p>
+                            <div>
+                                <pre><div ><span >&gt;  (~(nest ut [%atom %ud ~]) | [%atom %ux ~])</span></div><div ><span >%.n</span></div></pre>
+                            </div>
+                            <p>We call auras "soft types" since this nesting behavior can be ignored. Auras are
+                                non-coercive, but conversions may have to go via the empty aura, e.g.</p>
+                            <div>
+                                <pre><div ><span >&gt; ^-(@ud ^-(@ 'foo'))</span></div><div ><span >7.303.014</span></div></pre>
+                            </div>
+                            <p>This is implicitly done by the irregular form of <code>^-</code>.</p>
+                            <div>
+                                <pre><div ><span >&gt; `@ud`'foo'</span></div><div ><span >7.303.014</span></div></pre>
+                            </div>
+                            <h3 id="bunting" level="3">Bunting</h3>
+                            <p>The bunt value for all auras is 0 except for <code>@da</code>.</p>
+                            <div>
+                                <pre><div ><span >&gt; *@da</span></div><div ><span >~2000.1.1</span></div></pre>
+                            </div>
+                            <p>A bunt value of 0 is helpful when working with loobeans.</p>
+                        </article>
+                    </div>
+                    <div>
+                        <div style="max-width: 45%;">
+                            <p>&lt;- </p>
+                            <p>Advanced Types</p>
+                            <p></p>
+                        </div>
+                        <div style="max-width: 45%;">
+                            <p></p>
+                            <p>Arvo</p>
+                            <p> -&gt;</p>
+                        </div>
+                    </div>
+                    <div><a target="_blank"
+                            href="https://github.com/urbit/developers.urbit.org/blob/main/content/reference/hoon/auras.md">Edit
+                            this page on GitHub</a>
+                        <p>Last modified February 16, 2023</p>
+                    </div>
+                    <div></div>
+                </div>
+                <nav
+                    style="top: 8rem; height: calc(100vh - 16rem); font-variant: no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual;">
+                    <div>
+                        <ul></ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div id="__next" data-reactroot="">
+        <div>
+            <div>
+                <header><a href="/">Urbit Developers</a></header>
+                <div>
+                    <ul>
+                        <li><span>
+                                <p>Hoon</p>
+                            </span>
+                            <div "><li><a  href=" /reference/hoon/overview">Overview</a>
+                        </li>
+                        <li><a href="/reference/hoon/cheat-sheet">Cheat Sheet</a></li>
+                        <li><a href="/reference/hoon/irregular">Irregular forms</a></li>
+                        <li><a href="/reference/hoon/hoon-errors">Hoon Errors</a></li>
+                        <li><a href="/reference/hoon/style">Hoon Style Guide</a></li>
+                        <li><a href="/reference/hoon/basic">Basic Types</a></li>
+                        <li><a href="/reference/hoon/advanced">Advanced Types</a></li>
+                        <li><a href="/reference/hoon/auras">Auras</a></li>
+                        <li><a href="/reference/hoon/arvo">Arvo</a></li>
+                    </ul>
+                    <ul>
+                        <li><span>
+                                <p>Standard Library</p>
+                            </span>
+                            <div>
+                                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                                    /reference/hoon/stdlib/1a">1a: Basic Arithmetic</a>
+                        </li>
+                        <li><a href="/reference/hoon/stdlib/1b">1b: Tree Addressing</a></li>
+                        <li><a href="/reference/hoon/stdlib/1c">1c: Molds and Mold-Builders</a></li>
+                        <li><a href="/reference/hoon/stdlib/2a">2a: Unit Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2b">2b: List Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2c">2c: Bit Arithmetic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2d">2d: Bit Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2e">2e: Insecure Hashing</a></li>
+                        <li><a href="/reference/hoon/stdlib/2f">2f: Noun Ordering</a></li>
+                        <li><a href="/reference/hoon/stdlib/2g">2g: Unsigned Powers</a></li>
+                        <li><a href="/reference/hoon/stdlib/2h">2h: Set Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2i">2i: Map Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2j">2j: Jar and Jug Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2k">2k: Queue Logic</a></li>
+                        <li><a href="/reference/hoon/stdlib/2l">2l: Container from Container</a></li>
+                        <li><a href="/reference/hoon/stdlib/2m">2m: Container from Noun</a></li>
+                        <li><a href="/reference/hoon/stdlib/2n">2n: Functional Hacks</a></li>
+                        <li><a href="/reference/hoon/stdlib/2o">2o: Normalizing Containers</a></li>
+                        <li><a href="/reference/hoon/stdlib/2p">2p: Serialization</a></li>
+                        <li><a href="/reference/hoon/stdlib/2q">2q: Molds and Mold-Builders</a></li>
+                        <li><a href="/reference/hoon/stdlib/3a">3a: Modular and Signed Ints</a></li>
+                        <li><a href="/reference/hoon/stdlib/3b">3b: Floating Point</a></li>
+                        <li><a href="/reference/hoon/stdlib/3c">3c: Urbit Time</a></li>
+                        <li><a href="/reference/hoon/stdlib/3d">3d: SHA Hash Family</a></li>
+                        <li><a href="/reference/hoon/stdlib/3e">3e: AES encryption (Removed)</a></li>
+                        <li><a href="/reference/hoon/stdlib/3f">3f: Scrambling</a></li>
+                        <li><a href="/reference/hoon/stdlib/3g">3g: Molds and Mold-Builders</a></li>
+                        <li><a href="/reference/hoon/stdlib/4a">4a: Exotic Bases</a></li>
+                        <li><a href="/reference/hoon/stdlib/4b">4b: Text Processing</a></li>
+                        <li><a href="/reference/hoon/stdlib/4c">4c: Tank Printer</a></li>
+                        <li><a href="/reference/hoon/stdlib/4d">4d: Parsing (Tracing)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4e">4e: Parsing (Combinators)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4f">4f: Parsing (Rule-Builders)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4g">4g: Parsing (Outside Caller)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4h">4h: Parsing (ASCII Glyphs)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4i">4i: Parsing (Useful Idioms)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4j">4j: Parsing (Bases and Base Digits)</a></li>
+                        <li><a href="/reference/hoon/stdlib/4k">4k: Atom Printing</a></li>
+                        <li><a href="/reference/hoon/stdlib/4l">4l: Atom Parsing</a></li>
+                        <li><a href="/reference/hoon/stdlib/4m">4m: Formatting Functions</a></li>
+                        <li><a href="/reference/hoon/stdlib/4n">4n: Virtualization</a></li>
+                        <li><a href="/reference/hoon/stdlib/4o">4o: Molds</a></li>
+                        <li><a href="/reference/hoon/stdlib/5a">5a: Compiler Utilities</a></li>
+                        <li><a href="/reference/hoon/stdlib/5b">5b: Macro Expansion</a></li>
+                        <li><a href="/reference/hoon/stdlib/5c">5c: Compiler Backend &amp; Prettyprinter</a></li>
+                        <li><a href="/reference/hoon/stdlib/5d">5d: Parser</a></li>
+                        <li><a href="/reference/hoon/stdlib/5e">5e: Molds and mold builders</a></li>
+                        <li><a href="/reference/hoon/stdlib/5f">5f: Profiling support</a></li>
+                    </ul>
+                    <ul></ul>
+                </div>
+                </li>
+                <li><span>
+                        <p>Runes</p>
+                    </span>
+                    <div>
+                        <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                            /reference/hoon/rune/constants">Constants (Atoms and Strings)</a>
+                </li>
+                <li><a href="/reference/hoon/rune/lus">+ lus · Arms</a></li>
+                <li><a href="/reference/hoon/rune/bar">| bar · Cores</a></li>
+                <li><a href="/reference/hoon/rune/buc">$ buc · Structures</a></li>
+                <li><a href="/reference/hoon/rune/cen">% cen · Calls</a></li>
+                <li><a href="/reference/hoon/rune/col">: col · Cells</a></li>
+                <li><a href="/reference/hoon/rune/dot">. dot · Nock</a></li>
+                <li><a href="/reference/hoon/rune/fas">/ fas · Imports</a></li>
+                <li><a href="/reference/hoon/rune/ket">^ ket · Casts</a></li>
+                <li><a href="/reference/hoon/rune/mic">; mic · Make</a></li>
+                <li><a href="/reference/hoon/rune/sig">~ sig · Hints</a></li>
+                <li><a href="/reference/hoon/rune/tis">= tis · Subject</a></li>
+                <li><a href="/reference/hoon/rune/wut">? wut · Conditionals</a></li>
+                <li><a href="/reference/hoon/rune/zap">! zap · Wild</a></li>
+                <li><a href="/reference/hoon/rune/terminators">--, == Terminators</a></li>
+                </ul>
+                <ul></ul>
+            </div>
+            </li>
+            <li><span>
+                    <p>Limbs and wings</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                        /reference/hoon/limbs/limb">Limbs</a>
+            </li>
+            <li><a href="/reference/hoon/limbs/wing">Wings</a></li>
+            </ul>
+            <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Zuse</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/hoon/zuse/2d_1-5">2d(1-5): To JSON, Wains</a>
+        </li>
+        <li><a href="/reference/hoon/zuse/2d_6">2d(6): From JSON</a></li>
+        <li><a href="/reference/hoon/zuse/2d_7">2d(7): From JSON (unit)</a></li>
+        <li><a href="/reference/hoon/zuse/2e_2-3">2e(2-3): Print &amp; Parse JSON</a></li>
+        <li><a href="/reference/hoon/zuse/2m">2m: Ordered Maps</a></li>
+        </ul>
+        <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Arvo</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/arvo/overview">Overview</a>
+    </li>
+    </ul>
+    <ul>
+        <li><span>
+                <p>Ames</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/ames/ames">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/ames/cryptography">Cryptography</a></li>
+        <li><a href="/reference/arvo/ames/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/ames/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/ames/data-types">Data Types</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Behn</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/behn/behn">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/behn/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/behn/scry">Scry Reference</a></li>
+    <li><a href="/reference/arvo/behn/examples">Examples</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Clay</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/clay/clay">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/clay/architecture">Architecture</a></li>
+    <li><a href="/reference/arvo/clay/using">Using Clay</a></li>
+    <li><a href="/reference/arvo/clay/data-types">Data Types</a></li>
+    <li><a href="/reference/arvo/clay/scry">Scry Reference</a></li>
+    <li><a href="/reference/arvo/clay/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/clay/examples">Examples</a></li>
+    </ul>
+    <ul>
+        <li><span>
+                <p>Marks</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                    /reference/arvo/clay/marks/marks">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/clay/marks/writing-marks">Writing Marks</a></li>
+        <li><a href="/reference/arvo/clay/marks/using-marks">Using Marks</a></li>
+        <li><a href="/reference/arvo/clay/marks/examples">Examples</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Dill</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/dill/dill">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/dill/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/dill/scry">Scry Reference</a></li>
+    <li><a href="/reference/arvo/dill/data-types">Data Types</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Eyre</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/eyre/eyre">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/eyre/external-api-ref">External API Reference</a></li>
+    <li><a href="/reference/arvo/eyre/tasks">Internal API Reference</a></li>
+    <li><a href="/reference/arvo/eyre/scry">Scry Reference</a></li>
+    <li><a href="/reference/arvo/eyre/data-types">Data Types</a></li>
+    <li><a href="/reference/arvo/eyre/guide">Guide</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Gall</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/gall/gall">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/gall/gall-api">API Reference</a></li>
+    <li><a href="/reference/arvo/gall/data-types">Data Types</a></li>
+    <li><a href="/reference/arvo/gall/threads">Threads Reference</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Iris</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/iris/iris">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/iris/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/iris/data-types">Data Types</a></li>
+    <li><a href="/reference/arvo/iris/example">Example</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Jael</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/jael/jael">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/jael/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/jael/scry">Scry Reference</a></li>
+    <li><a href="/reference/arvo/jael/data-types">Data Types</a></li>
+    <li><a href="/reference/arvo/jael/examples">Examples</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Khan</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/khan/khan">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/khan/tasks">API Reference</a></li>
+    <li><a href="/reference/arvo/khan/types">Data Types</a></li>
+    <li><a href="/reference/arvo/khan/example">Example</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Threads</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/threads/overview">Overview</a>
+    </li>
+    <li><a href="/reference/arvo/threads/http-api">HTTP API</a></li>
+    <li><a href="/reference/arvo/threads/reference">Reference</a></li>
+    </ul>
+    <ul>
+        <li><span>
+                <p>Gall</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                    /reference/arvo/threads/gall/start-thread">Start Thread</a>
+        </li>
+        <li><a href="/reference/arvo/threads/gall/take-result">Take Result</a></li>
+        <li><a href="/reference/arvo/threads/gall/take-facts">Take Facts</a></li>
+        <li><a href="/reference/arvo/threads/gall/stop-thread">Stop Thread</a></li>
+        <li><a href="/reference/arvo/threads/gall/poke-thread">Poke Thread</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Examples</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                /reference/arvo/threads/examples/get-json">Fetch JSON</a>
+    </li>
+    <li><a href="/reference/arvo/threads/examples/child-thread">Child Thread</a></li>
+    <li><a href="/reference/arvo/threads/examples/main-loop">Main-loop</a></li>
+    <li><a href="/reference/arvo/threads/examples/poke-agent">Poke Agent</a></li>
+    <li><a href="/reference/arvo/threads/examples/scry">Scry</a></li>
+    <li><a href="/reference/arvo/threads/examples/take-fact">Take Fact</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Concepts</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/concepts/scry">Scries</a>
+    </li>
+    <li><a href="/reference/arvo/concepts/subscriptions">Subscriptions</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Tutorials</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/tutorials/move-trace">Move Trace</a>
+    </li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Reference</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                /reference/arvo/reference/cryptography">Cryptography</a>
+    </li>
+    <li><a href="/reference/arvo/reference/filesystem">Filesystem Hierarchy</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Nock</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/nock/definition">Nock Definition</a>
+    </li>
+    <li><a href="/reference/nock/explanation">Explanation</a></li>
+    <li><a href="/reference/nock/example">Example</a></li>
+    <li><a href="/reference/nock/implementations">Implementations</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Vere</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/runtime/runtime">C Runtime System</a>
+    </li>
+    <li><a href="/reference/runtime/nouns">Land of Nouns</a></li>
+    <li><a href="/reference/runtime/api">API overview by prefix</a></li>
+    <li><a href="/reference/runtime/c">C in Urbit</a></li>
+    <li><a href="/reference/runtime/jetting">Writing Jets</a></li>
+    <li><a href="/reference/runtime/cryptography">Cryptography</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Azimuth</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/azimuth/azimuth">Overview</a>
+    </li>
+    <li><a href="/reference/azimuth/hd-wallet">Urbit HD Wallet</a></li>
+    <li><a href="/reference/azimuth/flow">Azimuth Data Flow</a></li>
+    <li><a href="/reference/azimuth/azimuth-eth">Azimuth.eth</a></li>
+    <li><a href="/reference/azimuth/ecliptic">Ecliptic.eth</a></li>
+    <li><a href="/reference/azimuth/advanced-azimuth-tools">Advanced Azimuth Tools</a></li>
+    <li><a href="/reference/azimuth/life-and-rift">Life and Rift</a></li>
+    </ul>
+    <ul>
+        <li><span>
+                <p>Layer 2</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/azimuth/l2/layer2">Layer 2 Overview</a>
+        </li>
+        <li><a href="/reference/azimuth/l2/l2-actions">Layer 2 Actions</a></li>
+        <li><a href="/reference/azimuth/l2/bytestring">Transaction Format</a></li>
+        <li><a href="/reference/azimuth/l2/roller">Rollers</a></li>
+        <li><a href="/reference/azimuth/l2/layer2-api">Roller HTTP RPC-API</a></li>
+        <li><a href="/reference/azimuth/l2/roller-tutorial">Custom Roller Tutorial</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Glossary</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/glossary/agent">Agent</a>
+    </li>
+    <li><a href="/reference/glossary/ames">Ames</a></li>
+    <li><a href="/reference/glossary/api">API</a></li>
+    <li><a href="/reference/glossary/aqua">Aqua</a></li>
+    <li><a href="/reference/glossary/arm">Arm</a></li>
+    <li><a href="/reference/glossary/arvo">Arvo</a></li>
+    <li><a href="/reference/glossary/atom">Atom</a></li>
+    <li><a href="/reference/glossary/aura">Aura</a></li>
+    <li><a href="/reference/glossary/aural-ascii">Aural ASCII</a></li>
+    <li><a href="/reference/glossary/azimuth">Azimuth</a></li>
+    <li><a href="/reference/glossary/battery">Battery</a></li>
+    <li><a href="/reference/glossary/behn">Behn</a></li>
+    <li><a href="/reference/glossary/bowl">Bowl</a></li>
+    <li><a href="/reference/glossary/bridge">Bridge</a></li>
+    <li><a href="/reference/glossary/bunt">Bunt</a></li>
+    <li><a href="/reference/glossary/card">Card</a></li>
+    <li><a href="/reference/glossary/case">Case</a></li>
+    <li><a href="/reference/glossary/cask">Cask</a></li>
+    <li><a href="/reference/glossary/cell">Cell</a></li>
+    <li><a href="/reference/glossary/censures">Censures</a></li>
+    <li><a href="/reference/glossary/claims">Claims</a></li>
+    <li><a href="/reference/glossary/clay">Clay</a></li>
+    <li><a href="/reference/glossary/cold-atom">Cold atom</a></li>
+    <li><a href="/reference/glossary/comet">Comet</a></li>
+    <li><a href="/reference/glossary/commit">Commit</a></li>
+    <li><a href="/reference/glossary/cons">Cons</a></li>
+    <li><a href="/reference/glossary/context">Context</a></li>
+    <li><a href="/reference/glossary/cord">Cord</a></li>
+    <li><a href="/reference/glossary/core">Core</a></li>
+    <li><a href="/reference/glossary/delegated-sending">Delegated Sending</a></li>
+    <li><a href="/reference/glossary/desk">Desk</a></li>
+    <li><a href="/reference/glossary/dill">Dill</a></li>
+    <li><a href="/reference/glossary/docvote">Document Proposal</a></li>
+    <li><a href="/reference/glossary/dojo">Dojo</a></li>
+    <li><a href="/reference/glossary/door">Door</a></li>
+    <li><a href="/reference/glossary/double-boot">Double-boot</a></li>
+    <li><a href="/reference/glossary/dry-gate">Dry Gate</a></li>
+    <li><a href="/reference/glossary/duct">Duct</a></li>
+    <li><a href="/reference/glossary/ecliptic">Ecliptic</a></li>
+    <li><a href="/reference/glossary/entropy">Entropy</a></li>
+    <li><a href="/reference/glossary/eventlog">Event Log</a></li>
+    <li><a href="/reference/glossary/eyre">Eyre</a></li>
+    <li><a href="/reference/glossary/face">Face</a></li>
+    <li><a href="/reference/glossary/fact">Fact</a></li>
+    <li><a href="/reference/glossary/foo-bar-baz">Foo Bar Baz</a></li>
+    <li><a href="/reference/glossary/galaxy">Galaxy</a></li>
+    <li><a href="/reference/glossary/gall">Gall</a></li>
+    <li><a href="/reference/glossary/garden">Garden</a></li>
+    <li><a href="/reference/glossary/gate">Gate</a></li>
+    <li><a href="/reference/glossary/generator">Generator</a></li>
+    <li><a href="/reference/glossary/gift">Gift</a></li>
+    <li><a href="/reference/glossary/glob">Glob</a></li>
+    <li><a href="/reference/glossary/hdwallet">HD Wallet</a></li>
+    <li><a href="/reference/glossary/helm">Helm</a></li>
+    <li><a href="/reference/glossary/hood">Hood</a></li>
+    <li><a href="/reference/glossary/hoon">Hoon</a></li>
+    <li><a href="/reference/glossary/invite-tree">Invite Tree</a></li>
+    <li><a href="/reference/glossary/iris">Iris</a></li>
+    <li><a href="/reference/glossary/jael">Jael</a></li>
+    <li><a href="/reference/glossary/jet">Jet</a></li>
+    <li><a href="/reference/glossary/kelvin">Kelvin versioning</a></li>
+    <li><a href="/reference/glossary/kernel">Kelvin versioning</a></li>
+    <li><a href="/reference/glossary/keyfile">Keyfile</a></li>
+    <li><a href="/reference/glossary/keywords">Keywords</a></li>
+    <li><a href="/reference/glossary/khan">Khan</a></li>
+    <li><a href="/reference/glossary/kiln">Kiln</a></li>
+    <li><a href="/reference/glossary/landscape">Landscape</a></li>
+    <li><a href="/reference/glossary/leg">Leg</a></li>
+    <li><a href="/reference/glossary/list">List</a></li>
+    <li><a href="/reference/glossary/loobean">Loobean</a></li>
+    <li><a href="/reference/glossary/lull">Lull</a></li>
+    <li><a href="/reference/glossary/mark">Mark</a></li>
+    <li><a href="/reference/glossary/metals">Metals</a></li>
+    <li><a href="/reference/glossary/mold">Mold</a></li>
+    <li><a href="/reference/glossary/monad">Monad</a></li>
+    <li><a href="/reference/glossary/moon">Moon</a></li>
+    <li><a href="/reference/glossary/move">Move</a></li>
+    <li><a href="/reference/glossary/nock">Nock</a></li>
+    <li><a href="/reference/glossary/noun">Noun</a></li>
+    <li><a href="/reference/glossary/null">~</a></li>
+    <li><a href="/reference/glossary/ota-updates">OTA Updates</a></li>
+    <li><a href="/reference/glossary/path-prefix">Path Prefix</a></li>
+    <li><a href="/reference/glossary/path">Path</a></li>
+    <li><a href="/reference/glossary/patp">@p</a></li>
+    <li><a href="/reference/glossary/payload">Payload</a></li>
+    <li><a href="/reference/glossary/peek">Peek</a></li>
+    <li><a href="/reference/glossary/ph">pH</a></li>
+    <li><a href="/reference/glossary/pier">Pier</a></li>
+    <li><a href="/reference/glossary/pill">Pill</a></li>
+    <li><a href="/reference/glossary/planet">Planet</a></li>
+    <li><a href="/reference/glossary/poke">Poke</a></li>
+    <li><a href="/reference/glossary/proxies">Proxies</a></li>
+    <li><a href="/reference/glossary/replay">Replay</a></li>
+    <li><a href="/reference/glossary/reset">Factory Reset</a></li>
+    <li><a href="/reference/glossary/roller">Roller</a></li>
+    <li><a href="/reference/glossary/rollups">Naive rollups</a></li>
+    <li><a href="/reference/glossary/rune">Rune</a></li>
+    <li><a href="/reference/glossary/runtime">Runtime</a></li>
+    <li><a href="/reference/glossary/sail">Sail</a></li>
+    <li><a href="/reference/glossary/sample">Sample</a></li>
+    <li><a href="/reference/glossary/scry">Scry</a></li>
+    <li><a href="/reference/glossary/senate">Senate</a></li>
+    <li><a href="/reference/glossary/ship">Ship</a></li>
+    <li><a href="/reference/glossary/slam">Slam</a></li>
+    <li><a href="/reference/glossary/spider">Spider</a></li>
+    <li><a href="/reference/glossary/sponsor">Sponsor</a></li>
+    <li><a href="/reference/glossary/star">Star</a></li>
+    <li><a href="/reference/glossary/string">String</a></li>
+    <li><a href="/reference/glossary/subject-oriented-programming">Subject Oriented Programming</a></li>
+    <li><a href="/reference/glossary/subject">Subject</a></li>
+    <li><a href="/reference/glossary/subscription">Subscription</a></li>
+    <li><a href="/reference/glossary/tape">Tape</a></li>
+    <li><a href="/reference/glossary/thread">Thread</a></li>
+    <li><a href="/reference/glossary/trap">Trap</a></li>
+    <li><a href="/reference/glossary/udon">Udon</a></li>
+    <li><a href="/reference/glossary/upgrade">Upgrade Proposal</a></li>
+    <li><a href="/reference/glossary/userspace">Userspace</a></li>
+    <li><a href="/reference/glossary/vane">Vane</a></li>
+    <li><a href="/reference/glossary/vase">Vase</a></li>
+    <li><a href="/reference/glossary/vere">Vere</a></li>
+    <li><a href="/reference/glossary/voting">Voting</a></li>
+    <li><a href="/reference/glossary/warm-atom">Warm atom</a></li>
+    <li><a href="/reference/glossary/wet-gate">Wet Gate</a></li>
+    <li><a href="/reference/glossary/wing">Wing</a></li>
+    <li><a href="/reference/glossary/wire">Wire</a></li>
+    <li><a href="/reference/glossary/wrapper">Wrapper</a></li>
+    <li><a href="/reference/glossary/zod">~zod</a></li>
+    <li><a href="/reference/glossary/zuse">Zuse</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    <li><span>
+            <p>Additional</p>
+        </span>
+        <div>
+            <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                /reference/additional/cryptography">Cryptography</a>
+    </li>
+    <li><a href="/reference/additional/mip">Mips (Maps of Maps)</a></li>
+    </ul>
+    <ul>
+        <li><span>
+                <p>Software Distribution</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/additional/dist/dist">Overview</a>
+        </li>
+        <li><a href="/reference/additional/dist/docket">Docket File</a></li>
+        <li><a href="/reference/additional/dist/glob">Glob</a></li>
+    </ul>
+    <ul></ul>
+    </div>
+    </li>
+    </ul>
+    </div>
+    </li>
+    </ul>
+    <div></div>
+    </div>
+    </div>
+    <nav>
+        <div></div>
+        <div>
+            <div>
+                <header><a href="/">Urbit Developers</a></header>
+                <ul>
+                    <li><span>
+                            <p>Hoon</p>
+                        </span>
+                        <div "><li><a  href=" /reference/hoon/overview">Overview</a>
+                    </li>
+                    <li><a href="/reference/hoon/cheat-sheet">Cheat Sheet</a></li>
+                    <li><a href="/reference/hoon/irregular">Irregular forms</a></li>
+                    <li><a href="/reference/hoon/hoon-errors">Hoon Errors</a></li>
+                    <li><a href="/reference/hoon/style">Hoon Style Guide</a></li>
+                    <li><a href="/reference/hoon/basic">Basic Types</a></li>
+                    <li><a href="/reference/hoon/advanced">Advanced Types</a></li>
+                    <li><a href="/reference/hoon/auras">Auras</a></li>
+                    <li><a href="/reference/hoon/arvo">Arvo</a></li>
+                </ul>
+                <ul>
+                    <li><span>
+                            <p>Standard Library</p>
+                        </span>
+                        <div>
+                            <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                                /reference/hoon/stdlib/1a">1a: Basic Arithmetic</a>
+                    </li>
+                    <li><a href="/reference/hoon/stdlib/1b">1b: Tree Addressing</a></li>
+                    <li><a href="/reference/hoon/stdlib/1c">1c: Molds and Mold-Builders</a></li>
+                    <li><a href="/reference/hoon/stdlib/2a">2a: Unit Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2b">2b: List Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2c">2c: Bit Arithmetic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2d">2d: Bit Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2e">2e: Insecure Hashing</a></li>
+                    <li><a href="/reference/hoon/stdlib/2f">2f: Noun Ordering</a></li>
+                    <li><a href="/reference/hoon/stdlib/2g">2g: Unsigned Powers</a></li>
+                    <li><a href="/reference/hoon/stdlib/2h">2h: Set Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2i">2i: Map Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2j">2j: Jar and Jug Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2k">2k: Queue Logic</a></li>
+                    <li><a href="/reference/hoon/stdlib/2l">2l: Container from Container</a></li>
+                    <li><a href="/reference/hoon/stdlib/2m">2m: Container from Noun</a></li>
+                    <li><a href="/reference/hoon/stdlib/2n">2n: Functional Hacks</a></li>
+                    <li><a href="/reference/hoon/stdlib/2o">2o: Normalizing Containers</a></li>
+                    <li><a href="/reference/hoon/stdlib/2p">2p: Serialization</a></li>
+                    <li><a href="/reference/hoon/stdlib/2q">2q: Molds and Mold-Builders</a></li>
+                    <li><a href="/reference/hoon/stdlib/3a">3a: Modular and Signed Ints</a></li>
+                    <li><a href="/reference/hoon/stdlib/3b">3b: Floating Point</a></li>
+                    <li><a href="/reference/hoon/stdlib/3c">3c: Urbit Time</a></li>
+                    <li><a href="/reference/hoon/stdlib/3d">3d: SHA Hash Family</a></li>
+                    <li><a href="/reference/hoon/stdlib/3e">3e: AES encryption (Removed)</a></li>
+                    <li><a href="/reference/hoon/stdlib/3f">3f: Scrambling</a></li>
+                    <li><a href="/reference/hoon/stdlib/3g">3g: Molds and Mold-Builders</a></li>
+                    <li><a href="/reference/hoon/stdlib/4a">4a: Exotic Bases</a></li>
+                    <li><a href="/reference/hoon/stdlib/4b">4b: Text Processing</a></li>
+                    <li><a href="/reference/hoon/stdlib/4c">4c: Tank Printer</a></li>
+                    <li><a href="/reference/hoon/stdlib/4d">4d: Parsing (Tracing)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4e">4e: Parsing (Combinators)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4f">4f: Parsing (Rule-Builders)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4g">4g: Parsing (Outside Caller)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4h">4h: Parsing (ASCII Glyphs)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4i">4i: Parsing (Useful Idioms)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4j">4j: Parsing (Bases and Base Digits)</a></li>
+                    <li><a href="/reference/hoon/stdlib/4k">4k: Atom Printing</a></li>
+                    <li><a href="/reference/hoon/stdlib/4l">4l: Atom Parsing</a></li>
+                    <li><a href="/reference/hoon/stdlib/4m">4m: Formatting Functions</a></li>
+                    <li><a href="/reference/hoon/stdlib/4n">4n: Virtualization</a></li>
+                    <li><a href="/reference/hoon/stdlib/4o">4o: Molds</a></li>
+                    <li><a href="/reference/hoon/stdlib/5a">5a: Compiler Utilities</a></li>
+                    <li><a href="/reference/hoon/stdlib/5b">5b: Macro Expansion</a></li>
+                    <li><a href="/reference/hoon/stdlib/5c">5c: Compiler Backend &amp; Prettyprinter</a></li>
+                    <li><a href="/reference/hoon/stdlib/5d">5d: Parser</a></li>
+                    <li><a href="/reference/hoon/stdlib/5e">5e: Molds and mold builders</a></li>
+                    <li><a href="/reference/hoon/stdlib/5f">5f: Profiling support</a></li>
+                </ul>
+                <ul></ul>
+            </div>
+            </li>
+            <li><span>
+                    <p>Runes</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                        /reference/hoon/rune/constants">Constants (Atoms and Strings)</a>
+            </li>
+            <li><a href="/reference/hoon/rune/lus">+ lus · Arms</a></li>
+            <li><a href="/reference/hoon/rune/bar">| bar · Cores</a></li>
+            <li><a href="/reference/hoon/rune/buc">$ buc · Structures</a></li>
+            <li><a href="/reference/hoon/rune/cen">% cen · Calls</a></li>
+            <li><a href="/reference/hoon/rune/col">: col · Cells</a></li>
+            <li><a href="/reference/hoon/rune/dot">. dot · Nock</a></li>
+            <li><a href="/reference/hoon/rune/fas">/ fas · Imports</a></li>
+            <li><a href="/reference/hoon/rune/ket">^ ket · Casts</a></li>
+            <li><a href="/reference/hoon/rune/mic">; mic · Make</a></li>
+            <li><a href="/reference/hoon/rune/sig">~ sig · Hints</a></li>
+            <li><a href="/reference/hoon/rune/tis">= tis · Subject</a></li>
+            <li><a href="/reference/hoon/rune/wut">? wut · Conditionals</a></li>
+            <li><a href="/reference/hoon/rune/zap">! zap · Wild</a></li>
+            <li><a href="/reference/hoon/rune/terminators">--, == Terminators</a></li>
+            </ul>
+            <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Limbs and wings</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/hoon/limbs/limb">Limbs</a>
+        </li>
+        <li><a href="/reference/hoon/limbs/wing">Wings</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Zuse</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/hoon/zuse/2d_1-5">2d(1-5): To JSON, Wains</a>
+        </li>
+        <li><a href="/reference/hoon/zuse/2d_6">2d(6): From JSON</a></li>
+        <li><a href="/reference/hoon/zuse/2d_7">2d(7): From JSON (unit)</a></li>
+        <li><a href="/reference/hoon/zuse/2e_2-3">2e(2-3): Print &amp; Parse JSON</a></li>
+        <li><a href="/reference/hoon/zuse/2m">2m: Ordered Maps</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Arvo</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/arvo/overview">Overview</a>
+        </li>
+        </ul>
+        <ul>
+            <li><span>
+                    <p>Ames</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                        /reference/arvo/ames/ames">Overview</a>
+            </li>
+            <li><a href="/reference/arvo/ames/cryptography">Cryptography</a></li>
+            <li><a href="/reference/arvo/ames/tasks">API Reference</a></li>
+            <li><a href="/reference/arvo/ames/scry">Scry Reference</a></li>
+            <li><a href="/reference/arvo/ames/data-types">Data Types</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Behn</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/behn/behn">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/behn/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/behn/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/behn/examples">Examples</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Clay</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/clay/clay">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/clay/architecture">Architecture</a></li>
+        <li><a href="/reference/arvo/clay/using">Using Clay</a></li>
+        <li><a href="/reference/arvo/clay/data-types">Data Types</a></li>
+        <li><a href="/reference/arvo/clay/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/clay/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/clay/examples">Examples</a></li>
+        </ul>
+        <ul>
+            <li><span>
+                    <p>Marks</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                        /reference/arvo/clay/marks/marks">Overview</a>
+            </li>
+            <li><a href="/reference/arvo/clay/marks/writing-marks">Writing Marks</a></li>
+            <li><a href="/reference/arvo/clay/marks/using-marks">Using Marks</a></li>
+            <li><a href="/reference/arvo/clay/marks/examples">Examples</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Dill</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/dill/dill">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/dill/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/dill/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/dill/data-types">Data Types</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Eyre</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/eyre/eyre">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/eyre/external-api-ref">External API Reference</a></li>
+        <li><a href="/reference/arvo/eyre/tasks">Internal API Reference</a></li>
+        <li><a href="/reference/arvo/eyre/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/eyre/data-types">Data Types</a></li>
+        <li><a href="/reference/arvo/eyre/guide">Guide</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Gall</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/gall/gall">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/gall/gall-api">API Reference</a></li>
+        <li><a href="/reference/arvo/gall/data-types">Data Types</a></li>
+        <li><a href="/reference/arvo/gall/threads">Threads Reference</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Iris</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/iris/iris">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/iris/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/iris/data-types">Data Types</a></li>
+        <li><a href="/reference/arvo/iris/example">Example</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Jael</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/jael/jael">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/jael/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/jael/scry">Scry Reference</a></li>
+        <li><a href="/reference/arvo/jael/data-types">Data Types</a></li>
+        <li><a href="/reference/arvo/jael/examples">Examples</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Khan</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/khan/khan">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/khan/tasks">API Reference</a></li>
+        <li><a href="/reference/arvo/khan/types">Data Types</a></li>
+        <li><a href="/reference/arvo/khan/example">Example</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Threads</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/threads/overview">Overview</a>
+        </li>
+        <li><a href="/reference/arvo/threads/http-api">HTTP API</a></li>
+        <li><a href="/reference/arvo/threads/reference">Reference</a></li>
+        </ul>
+        <ul>
+            <li><span>
+                    <p>Gall</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                        /reference/arvo/threads/gall/start-thread">Start Thread</a>
+            </li>
+            <li><a href="/reference/arvo/threads/gall/take-result">Take Result</a></li>
+            <li><a href="/reference/arvo/threads/gall/take-facts">Take Facts</a></li>
+            <li><a href="/reference/arvo/threads/gall/stop-thread">Stop Thread</a></li>
+            <li><a href="/reference/arvo/threads/gall/poke-thread">Poke Thread</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Examples</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-12 text-base hover:text-green-400 " href="
+                    /reference/arvo/threads/examples/get-json">Fetch JSON</a>
+        </li>
+        <li><a href="/reference/arvo/threads/examples/child-thread">Child Thread</a></li>
+        <li><a href="/reference/arvo/threads/examples/main-loop">Main-loop</a></li>
+        <li><a href="/reference/arvo/threads/examples/poke-agent">Poke Agent</a></li>
+        <li><a href="/reference/arvo/threads/examples/scry">Scry</a></li>
+        <li><a href="/reference/arvo/threads/examples/take-fact">Take Fact</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Concepts</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/concepts/scry">Scries</a>
+        </li>
+        <li><a href="/reference/arvo/concepts/subscriptions">Subscriptions</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Tutorials</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/tutorials/move-trace">Move Trace</a>
+        </li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Reference</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                    /reference/arvo/reference/cryptography">Cryptography</a>
+        </li>
+        <li><a href="/reference/arvo/reference/filesystem">Filesystem Hierarchy</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Nock</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/nock/definition">Nock Definition</a>
+        </li>
+        <li><a href="/reference/nock/explanation">Explanation</a></li>
+        <li><a href="/reference/nock/example">Example</a></li>
+        <li><a href="/reference/nock/implementations">Implementations</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Vere</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/runtime/runtime">C Runtime System</a>
+        </li>
+        <li><a href="/reference/runtime/nouns">Land of Nouns</a></li>
+        <li><a href="/reference/runtime/api">API overview by prefix</a></li>
+        <li><a href="/reference/runtime/c">C in Urbit</a></li>
+        <li><a href="/reference/runtime/jetting">Writing Jets</a></li>
+        <li><a href="/reference/runtime/cryptography">Cryptography</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Azimuth</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/azimuth/azimuth">Overview</a>
+        </li>
+        <li><a href="/reference/azimuth/hd-wallet">Urbit HD Wallet</a></li>
+        <li><a href="/reference/azimuth/flow">Azimuth Data Flow</a></li>
+        <li><a href="/reference/azimuth/azimuth-eth">Azimuth.eth</a></li>
+        <li><a href="/reference/azimuth/ecliptic">Ecliptic.eth</a></li>
+        <li><a href="/reference/azimuth/advanced-azimuth-tools">Advanced Azimuth Tools</a></li>
+        <li><a href="/reference/azimuth/life-and-rift">Life and Rift</a></li>
+        </ul>
+        <ul>
+            <li><span>
+                    <p>Layer 2</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                        /reference/azimuth/l2/layer2">Layer 2 Overview</a>
+            </li>
+            <li><a href="/reference/azimuth/l2/l2-actions">Layer 2 Actions</a></li>
+            <li><a href="/reference/azimuth/l2/bytestring">Transaction Format</a></li>
+            <li><a href="/reference/azimuth/l2/roller">Rollers</a></li>
+            <li><a href="/reference/azimuth/l2/layer2-api">Roller HTTP RPC-API</a></li>
+            <li><a href="/reference/azimuth/l2/roller-tutorial">Custom Roller Tutorial</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Glossary</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/glossary/agent">Agent</a>
+        </li>
+        <li><a href="/reference/glossary/ames">Ames</a></li>
+        <li><a href="/reference/glossary/api">API</a></li>
+        <li><a href="/reference/glossary/aqua">Aqua</a></li>
+        <li><a href="/reference/glossary/arm">Arm</a></li>
+        <li><a href="/reference/glossary/arvo">Arvo</a></li>
+        <li><a href="/reference/glossary/atom">Atom</a></li>
+        <li><a href="/reference/glossary/aura">Aura</a></li>
+        <li><a href="/reference/glossary/aural-ascii">Aural ASCII</a></li>
+        <li><a href="/reference/glossary/azimuth">Azimuth</a></li>
+        <li><a href="/reference/glossary/battery">Battery</a></li>
+        <li><a href="/reference/glossary/behn">Behn</a></li>
+        <li><a href="/reference/glossary/bowl">Bowl</a></li>
+        <li><a href="/reference/glossary/bridge">Bridge</a></li>
+        <li><a href="/reference/glossary/bunt">Bunt</a></li>
+        <li><a href="/reference/glossary/card">Card</a></li>
+        <li><a href="/reference/glossary/case">Case</a></li>
+        <li><a href="/reference/glossary/cask">Cask</a></li>
+        <li><a href="/reference/glossary/cell">Cell</a></li>
+        <li><a href="/reference/glossary/censures">Censures</a></li>
+        <li><a href="/reference/glossary/claims">Claims</a></li>
+        <li><a href="/reference/glossary/clay">Clay</a></li>
+        <li><a href="/reference/glossary/cold-atom">Cold atom</a></li>
+        <li><a href="/reference/glossary/comet">Comet</a></li>
+        <li><a href="/reference/glossary/commit">Commit</a></li>
+        <li><a href="/reference/glossary/cons">Cons</a></li>
+        <li><a href="/reference/glossary/context">Context</a></li>
+        <li><a href="/reference/glossary/cord">Cord</a></li>
+        <li><a href="/reference/glossary/core">Core</a></li>
+        <li><a href="/reference/glossary/delegated-sending">Delegated Sending</a></li>
+        <li><a href="/reference/glossary/desk">Desk</a></li>
+        <li><a href="/reference/glossary/dill">Dill</a></li>
+        <li><a href="/reference/glossary/docvote">Document Proposal</a></li>
+        <li><a href="/reference/glossary/dojo">Dojo</a></li>
+        <li><a href="/reference/glossary/door">Door</a></li>
+        <li><a href="/reference/glossary/double-boot">Double-boot</a></li>
+        <li><a href="/reference/glossary/dry-gate">Dry Gate</a></li>
+        <li><a href="/reference/glossary/duct">Duct</a></li>
+        <li><a href="/reference/glossary/ecliptic">Ecliptic</a></li>
+        <li><a href="/reference/glossary/entropy">Entropy</a></li>
+        <li><a href="/reference/glossary/eventlog">Event Log</a></li>
+        <li><a href="/reference/glossary/eyre">Eyre</a></li>
+        <li><a href="/reference/glossary/face">Face</a></li>
+        <li><a href="/reference/glossary/fact">Fact</a></li>
+        <li><a href="/reference/glossary/foo-bar-baz">Foo Bar Baz</a></li>
+        <li><a href="/reference/glossary/galaxy">Galaxy</a></li>
+        <li><a href="/reference/glossary/gall">Gall</a></li>
+        <li><a href="/reference/glossary/garden">Garden</a></li>
+        <li><a href="/reference/glossary/gate">Gate</a></li>
+        <li><a href="/reference/glossary/generator">Generator</a></li>
+        <li><a href="/reference/glossary/gift">Gift</a></li>
+        <li><a href="/reference/glossary/glob">Glob</a></li>
+        <li><a href="/reference/glossary/hdwallet">HD Wallet</a></li>
+        <li><a href="/reference/glossary/helm">Helm</a></li>
+        <li><a href="/reference/glossary/hood">Hood</a></li>
+        <li><a href="/reference/glossary/hoon">Hoon</a></li>
+        <li><a href="/reference/glossary/invite-tree">Invite Tree</a></li>
+        <li><a href="/reference/glossary/iris">Iris</a></li>
+        <li><a href="/reference/glossary/jael">Jael</a></li>
+        <li><a href="/reference/glossary/jet">Jet</a></li>
+        <li><a href="/reference/glossary/kelvin">Kelvin versioning</a></li>
+        <li><a href="/reference/glossary/kernel">Kelvin versioning</a></li>
+        <li><a href="/reference/glossary/keyfile">Keyfile</a></li>
+        <li><a href="/reference/glossary/keywords">Keywords</a></li>
+        <li><a href="/reference/glossary/khan">Khan</a></li>
+        <li><a href="/reference/glossary/kiln">Kiln</a></li>
+        <li><a href="/reference/glossary/landscape">Landscape</a></li>
+        <li><a href="/reference/glossary/leg">Leg</a></li>
+        <li><a href="/reference/glossary/list">List</a></li>
+        <li><a href="/reference/glossary/loobean">Loobean</a></li>
+        <li><a href="/reference/glossary/lull">Lull</a></li>
+        <li><a href="/reference/glossary/mark">Mark</a></li>
+        <li><a href="/reference/glossary/metals">Metals</a></li>
+        <li><a href="/reference/glossary/mold">Mold</a></li>
+        <li><a href="/reference/glossary/monad">Monad</a></li>
+        <li><a href="/reference/glossary/moon">Moon</a></li>
+        <li><a href="/reference/glossary/move">Move</a></li>
+        <li><a href="/reference/glossary/nock">Nock</a></li>
+        <li><a href="/reference/glossary/noun">Noun</a></li>
+        <li><a href="/reference/glossary/null">~</a></li>
+        <li><a href="/reference/glossary/ota-updates">OTA Updates</a></li>
+        <li><a href="/reference/glossary/path-prefix">Path Prefix</a></li>
+        <li><a href="/reference/glossary/path">Path</a></li>
+        <li><a href="/reference/glossary/patp">@p</a></li>
+        <li><a href="/reference/glossary/payload">Payload</a></li>
+        <li><a href="/reference/glossary/peek">Peek</a></li>
+        <li><a href="/reference/glossary/ph">pH</a></li>
+        <li><a href="/reference/glossary/pier">Pier</a></li>
+        <li><a href="/reference/glossary/pill">Pill</a></li>
+        <li><a href="/reference/glossary/planet">Planet</a></li>
+        <li><a href="/reference/glossary/poke">Poke</a></li>
+        <li><a href="/reference/glossary/proxies">Proxies</a></li>
+        <li><a href="/reference/glossary/replay">Replay</a></li>
+        <li><a href="/reference/glossary/reset">Factory Reset</a></li>
+        <li><a href="/reference/glossary/roller">Roller</a></li>
+        <li><a href="/reference/glossary/rollups">Naive rollups</a></li>
+        <li><a href="/reference/glossary/rune">Rune</a></li>
+        <li><a href="/reference/glossary/runtime">Runtime</a></li>
+        <li><a href="/reference/glossary/sail">Sail</a></li>
+        <li><a href="/reference/glossary/sample">Sample</a></li>
+        <li><a href="/reference/glossary/scry">Scry</a></li>
+        <li><a href="/reference/glossary/senate">Senate</a></li>
+        <li><a href="/reference/glossary/ship">Ship</a></li>
+        <li><a href="/reference/glossary/slam">Slam</a></li>
+        <li><a href="/reference/glossary/spider">Spider</a></li>
+        <li><a href="/reference/glossary/sponsor">Sponsor</a></li>
+        <li><a href="/reference/glossary/star">Star</a></li>
+        <li><a href="/reference/glossary/string">String</a></li>
+        <li><a href="/reference/glossary/subject-oriented-programming">Subject Oriented Programming</a></li>
+        <li><a href="/reference/glossary/subject">Subject</a></li>
+        <li><a href="/reference/glossary/subscription">Subscription</a></li>
+        <li><a href="/reference/glossary/tape">Tape</a></li>
+        <li><a href="/reference/glossary/thread">Thread</a></li>
+        <li><a href="/reference/glossary/trap">Trap</a></li>
+        <li><a href="/reference/glossary/udon">Udon</a></li>
+        <li><a href="/reference/glossary/upgrade">Upgrade Proposal</a></li>
+        <li><a href="/reference/glossary/userspace">Userspace</a></li>
+        <li><a href="/reference/glossary/vane">Vane</a></li>
+        <li><a href="/reference/glossary/vase">Vase</a></li>
+        <li><a href="/reference/glossary/vere">Vere</a></li>
+        <li><a href="/reference/glossary/voting">Voting</a></li>
+        <li><a href="/reference/glossary/warm-atom">Warm atom</a></li>
+        <li><a href="/reference/glossary/wet-gate">Wet Gate</a></li>
+        <li><a href="/reference/glossary/wing">Wing</a></li>
+        <li><a href="/reference/glossary/wire">Wire</a></li>
+        <li><a href="/reference/glossary/wrapper">Wrapper</a></li>
+        <li><a href="/reference/glossary/zod">~zod</a></li>
+        <li><a href="/reference/glossary/zuse">Zuse</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        <li><span>
+                <p>Additional</p>
+            </span>
+            <div>
+                <ul relative inline-block text-wall-600 pl-4 text-base hover:text-green-400 " href="
+                    /reference/additional/cryptography">Cryptography</a>
+        </li>
+        <li><a href="/reference/additional/mip">Mips (Maps of Maps)</a></li>
+        </ul>
+        <ul>
+            <li><span>
+                    <p>Software Distribution</p>
+                </span>
+                <div>
+                    <ul relative inline-block text-wall-600 pl-8 text-base hover:text-green-400 " href="
+                        /reference/additional/dist/dist">Overview</a>
+            </li>
+            <li><a href="/reference/additional/dist/docket">Docket File</a></li>
+            <li><a href="/reference/additional/dist/glob">Glob</a></li>
+        </ul>
+        <ul></ul>
+        </div>
+        </li>
+        </ul>
+        </div>
+        </li>
+        </ul>
+        <div></div>
+        </div>
+        </div><button>Search</button>
+    </nav><button><svg width="16" height="16" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
+            <rect width="16" height="3" rx="1.5"></rect>
+            <rect y="7" width="16" height="3" rx="1.5"></rect>
+            <rect y="14" width="16" height="3" rx="1.5"></rect>
+        </svg></button>
+
+    </div>
+    </div>
+</body>

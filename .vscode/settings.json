@@ -5,5 +5,7 @@
         "plaintext": false,
         "markdown": false
     },
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "html.format.enable": false,
+    "editor.formatOnSave": true
 }
